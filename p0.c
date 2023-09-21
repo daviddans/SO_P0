@@ -1,16 +1,10 @@
+#include "p0_lib.h"
 #include <stdio.h>
 #include <stdbool.h>
-#include <string.h>
+#define IN_LEN 100
 
-#Define IN_LEN 100
-
-int tro
-void inputHandler(){
-
-}
 int main(){
     char input[IN_LEN];
-    char *args;
     bool terminado = false;
     while(!terminado){
         printf("-->");
