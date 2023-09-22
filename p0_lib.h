@@ -2,6 +2,8 @@
 #include <stdbool.h>
 #include <string.h>
 
-//funcion para trocear la entrada
-int trocearCadena(char * cadena, char * args[]);
-void exitShell(bool *term);
+//Funciones auxiliares
+int trocearCadena(char * cadena, char * args[]); //funcion para trocear la entrada
+
+//Funciones vinculadas a los comandos de la shell
+void exitShell(bool *term); //salir de la shell
