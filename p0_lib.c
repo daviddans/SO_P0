@@ -11,8 +11,16 @@ return i;
 
 
 //Funciones vinculadas a comandos de la shell
-void exitShell(bool *term){
-    printf("Saliendo de la shell ^^ zZZ");
-    *term = true;
+void exitShell(bool *b){
+    printf("Saliendo de la shell ^^");
+    *b = false;
     return;
+}
+void help(char *args){
+    if(args==NULL){
+        printf("quit exit bye help[cmd]");
+    }
+    else if(strcmp(args,"help")){
+        printf("help muestra una lista de los comandos disponibles\nhelp [comando] muestra una ayuda detallada del comando");
+    }
 }
