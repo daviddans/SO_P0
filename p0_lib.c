@@ -23,7 +23,7 @@ void help(char *args){
     //Ayuda sobre el comando time
     else if(strcmp(args,"time")== 0) puts("time muestra la hora del sistema\n");
     //Ayuda sobre el comando pid
-    else if(strcmp(args,"pid")== 0) puts("pid muestra el identificador de la shell actual\n pid -p muestra el identificador de la shell padre\n");
+    else if(strcmp(args,"pid")== 0) puts("pid muestra el identificador de la shell actual\n pid -p muestra el identificador del proceso padre\n");
     //Ayuda sobre el comando time
     else if(strcmp(args,"chdir")== 0) puts("chdir muestra el directorio actual\n  chdir [dir] cambia el directorio actual al especificado\n");
     //Si se introduce un comando no reconocido se mostrara un mensaje de error

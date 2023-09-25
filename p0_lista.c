@@ -1,52 +1,51 @@
-#include "p0_Lista_H"
+//Codigo de la lista
+#include "p0_lista.h"
 #include <stdlib.h>
 #include <string.h>
 #include <malloc.h>
 #include <stdio.h>
+
 void createEmptyList(SList *L){
     *L = NULL;
 }
 
-void deleteElement(SPosL *p){
+void deleteElement(SPosL* p, SList L){
     free(*p);
 }
+
 void deleteList(SList *L){//recorre la lista y va eliminando sus elementos
     SPosL q = *L;
     while(*L != NULL){
         q = q->next;
-        deleteElement(&q);
+        deleteElement(&q, *L);
         q = (*L);
     }
     (*L) = NULL;
 }  
-SPosL createItem(char command){
-    SPosL q = NULL;
-    q = malloc(sizeof(SPosL));
-    q->next = NULL;
-    strcpy(q->comando, command);
-    return q;
-}
 
-int insertItem(SList *L, char *command){
-    if (*L == NULL){
-        *L = malloc(sizeof(SPosL));
-        strcpy((*L)->comando, command);
-        (*L)->next = NULL;
-        return 0;
-    } else {
-        SPosL q = *L;
-        SPosL comando;
-        while(q->next != NULL){
-            q = q->next;
-        }
-        comando = createItem(command);
-        q->next = comando;
-        return 0;
+bool createNode(char*  command, SPosL * pos){
+    *pos = malloc(sizeof(SPosL));
+    if(pos!=NULL){
+        memcpy((*pos)->comando, command, strlen(command));
+        (*pos)->next = NULL;
+        return true;
     }
+    else return false;
 }
 
-void ImprimirListado(SList L){//imprime por pantalla los elementos de la lista
-    int i = i;
+//Insertar nuevo comando al principio de la lista
+bool insertItem(SList *L, char* command){
+    SPosL pos;
+    if(createNode(command,&pos)){
+        pos->next = (*L);
+        (*L)->next = pos;
+        return true;
+    }
+    else return false;
+}
+
+void imprimirListado(SList L){//imprime por pantalla los elementos de la lista
+    int i = 1;
     SPosL q = L;
     while(q != NULL){
         printf("%d->%s", i, q->comando);
@@ -55,11 +54,10 @@ void ImprimirListado(SList L){//imprime por pantalla los elementos de la lista
     }
 }
 
-char Buscar(SList L, int pos){
+bool getElement(SList L, int pos, char* dest){
     int i = 1;
     if(pos < 1){
-        printf("Posicion no valida\n");
-        return; //no se que poner
+        return false;
     } else {
         SPosL q = L;
         while((q != NULL)&&(i < pos)){
@@ -67,8 +65,9 @@ char Buscar(SList L, int pos){
             i++;
         }
         if(i == pos){
-            return q->comando;
-        } else printf("Posicion no valida\n");
-        return;//no se que poner
+            strcpy(dest, q->comando);
+            return true;
+        }
     }
+    return false;
 }
