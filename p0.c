@@ -1,5 +1,5 @@
 //Author1: David Dans Villares Login: david.dans.villares@udc.es
-//Author2: Pablo Teijeiro ... Login: ...@udc.es
+//Author2: Pablo Teijeiro Torrón Login: pablo.teijeirot@udc.es
 
 #include "p0_lib.h"//Fichero con todas las dependencias del codigo
 #define MAX_IN 1000
@@ -16,7 +16,11 @@ void inputHandler(char * input, bool * onRunTime)
 		else if(strcmp(input,"exit")==0) exitShell(onRunTime);
 		else if(strcmp(input,"help")==0) help(args);
 		else if(strcmp(input,"authors")==0) authors(args);
-		else if(strcmp(input,"\n")!=0) printf("Comando no reconocido. Usa help para obtener una lista de comandos\n");
+		else if(strcmp(input,"date")==0) printDate();
+		else if(strcmp(input,"time")==0) printTime();
+		else if(strcmp(input,"pid")==0) pid(args);
+		else if(strcmp(input,"chdir")==0) changeDir(args);
+		else if(strcmp(input,"\n")!=0) printf("Comando no reconocido. Usa help para obtener una lista de comandos\n");//Si hay un comando no reconocido se imprime un error
 	}
 }
 //Funcion Main
