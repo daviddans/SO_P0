@@ -1,19 +1,21 @@
-#include <stdbool.h>
-#include <stdio.h>
-#include <string.h>
-#include <malloc.h>
-#define LENGTH 100
-#define LNULL NULL;
-typedef struct SNode * SPosL; 
-struct SNode{
-    char comando[LENGTH];
-    SPosL next;
-};
-typedef SPosL SList;
+//Cabecera de la lista (Usaremos la misma implementación para los comandos y los ficheros, por lo que habra funciones para cada tipo, y habŕa que controlar el no mezclarlos)
+#include "p0_lib.h"
+#define MAX_LEN_LIST 4096 //elementos maximos en una lista
 
-void createEmptyList(SList *L);   //Creamos una lista en L
-void deleteList(SList *L);    //Borramos la lista L
-bool insertItem(char command, SPosL p, SList *L);    //Instertamos un item con el parametro command al principio de la lista L                                         
-void removeElement(SPosL p, SList *L);   //Borramos el elemento en la posición p de la lista L
-void ImprimirListado(SList L); //Imprimimos la lista L
-char Buscar(SList L, int pos); //Copiamos el contenido del elemento no. pos en dest
+//Definicion de tipos
+struct item { //Struct con 3 campos para guardar comandos o ficheros
+    char* cadena; //Cadena para guardar un comando / un directorio
+    int fileD; //File descriptor
+    int mod; //Modo de apertura
+};
+typedef struct item* tItemL;//Tipo de dato a guardar en la lista (puntero a struct item)
+typedef tItemL tLista[MAX_LEN_LIST]; //Definicion de la lista (Array de punteros)
+
+//Funciones de la lista
+void createEmptyList(tLista* lista); //Inicializa una lista a vacia
+bool instertComand(tLista* lista, char* cmd); //Inserta un comando a la lista
+bool insertFile(tLista* lista,char* path, int fd, int mod); //Inserta la información de un fichero
+bool deleteList(tLista* lista); //Borrar una lista
+bool returnComand(tLista lista, int n, char* dest); //Coloca en dest una cadena con el comando numero n
+tItemL returnFile(tLista lista, int n); //Devuelve un struct tItemL con los datos del fichero numero n
+bool deleteFile(tLista* list, int df); //Busca el fichero con el df correspondiente y lo borra
