@@ -1,5 +1,5 @@
 #include "p0_lib.h"//Fichero con las dependencias del codigo
-
+#define Max_len_dir 500
 
 //Funciones vinculadas a comandos de la shell
 //Salir de la Shell
@@ -23,7 +23,7 @@ void help(char *args){
     //Ayuda sobre el comando time
     else if(strcmp(args,"time")== 0) puts("time muestra la hora del sistema\n");
     //Ayuda sobre el comando pid
-    else if(strcmp(args,"pid")== 0) puts("pid muestra el identificador de la shell actual\n pid -p muestra el identificador de la shell padre\n");
+    else if(strcmp(args,"pid")== 0) puts("pid muestra el identificador de la shell actual\n pid -p muestra el identificador del proceso padre\n");
     //Ayuda sobre el comando time
     else if(strcmp(args,"chdir")== 0) puts("chdir muestra el directorio actual\n  chdir [dir] cambia el directorio actual al especificado\n");
     //Si se introduce un comando no reconocido se mostrara un mensaje de error
@@ -40,8 +40,8 @@ void authors(char *args){
     else if(strcmp(args,"-n") == 0) strcpy(str,"\nAutores:\nNombre del autor 1: David Dans Villares\nNombre del autor 2: Pablo Teijeiro Torrón");
     //Si se introduce un parametro no valido se guarda un mensaje de error
     else {
-        strcpy(str,"Error: authors no reconoce el parametro: ");
-        strcat(str,args);
+        strcpy(str,"Error: authors no reconoce el parametro: "); //Creamos un mensaje de error
+        strcat(str,args); //Le añadimos el comando erroneo introducido
     }
     printf("%s\n",str);//Imprimir string guardada
 }
@@ -73,9 +73,9 @@ void pid(char *args){
 }
 //Mostrar o cambiar directorio
 void changeDir(char *args){
-    char dir[500]; //Creamos una variable para guardar el directorio actual
+    char dir[Max_len_dir]; //Creamos una variable para guardar el directorio actual
     if(args == NULL){ // Si no hay argumentos
-        if(getcwd(dir,500)==0) printf("Directorio actual: %s\n",dir); //Guardamos el directorio actual y lo imprimimos
+        if(getcwd(dir,Max_len_dir)==0) printf("Directorio actual: %s\n",dir); //Guardamos el directorio actual y lo imprimimos
         else perror("La longidud del directorio actual excede la esperada\n");
     }
     //Si hay argumentos 
