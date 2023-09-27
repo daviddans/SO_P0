@@ -5,7 +5,7 @@
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
-#include <malloc.h>
+#include <stdlib.h>
 
 //Funciones vinculadas a los comandos de la shell
 void exitShell(bool *term); //salir de la shell
