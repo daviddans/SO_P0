@@ -21,5 +21,10 @@ int main(){
     insertFile(&listaFCH,"fichero2.algo", 3);
     insertFile(&listaFCH,"fichero3.algo", 1);
     insertFile(&listaFCH,"fichero4.algo", 5);
+    
+    printFile(listaFCH, 0);
+    printFile(listaFCH, 1);
+    printFile(listaFCH, 2);
+    printFile(listaFCH, 3);
     return 0;
 }

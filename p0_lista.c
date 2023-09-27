@@ -1,37 +1,39 @@
 #include "p0_lista.h"
 
 void createEmptyList(tLista* lista){
-    *lista[0] = NULL; //Colocar el primer indice a null
+    (*lista)[0] = NULL;
 }
 
-bool createNode(tItemL* item, char* str, int mode, bool type){ //funcion auxiliar para realizar el malloc de un elemento a introducir
-    *item = malloc(sizeof(struct item));
+bool createNode(tItemL* item, char* str){ //funcion auxiliar para realizar el malloc de un elemento a introducir
+    *item = malloc(sizeof(strlen(str)));
     if(*item == NULL) //Comprobamos que se pudo realizar la reserva de memoria
     {
         return false;
     }
-    (*item)->cadena = NULL;//inicializamos cadena
-    if(type){ //Si type true, consideramos crear un comando
-        (*item)->cadena = str;//Copiamos el argumento str en el campo cadena
-        (*item)->mod = -1; //Consideramos -1 como un mode no valido, por tanto será un comando
-    }
-    else{ //Consideramos crear un fichero
-        (*item)->cadena = str; //Copiamos el argumento str en el campo cadena
-        (*item)->mod = mode; //Copiamos el mode
-    }
+    (*item)->cadena = str;//Copiamos el argumento str en el campo cadena
     return true;
 }
-bool insertComand(tLista* lista, char* cmd){
+
+bool insertComand(tLista* lista, char* cmd, int n){
     tItemL item = NULL; //Nuevo item
     int i = 0; //Iniciamos contador
-    if(createNode(&item, cmd, -1, true)){ //Si se consigue reservar memoria
-        while((*lista)[i] != NULL) //Recorremos la lista hasta encontrar el primer hueco
-        {
-            i++;
+    if(n<MAX_LEN_LIST){//Comprobamos no excedernos de la lista
+        if(createNode(&item, str)){ //Si se consigue reservar memoria
+                (*lista)[i] = item; //Guardamos el objeto en el ultimo
+                (*lista)->last++; //Aumentamos el
+                return true; //Exito devolvemos true
+            else free(item);
         }
-        if(i<MAX_LEN_LIST -1){//Comprobamos que la lista no este llena
-            (*lista)[i] = item; //Guardamos el objeto en el ultimo
-            (*lista)[i+1] = NULL; //Fijamos la siguiente posición en null
+    }
+    return false;  //En caso de fallo devolvemos false
+}
+
+bool insertFile(tLista* lista, char* str, int fd){
+    tItemL item = NULL; //Nuevo item
+    if(fd<MAX_LEN_LIST){ //Comprobamos que el fd no exceda el maximo de la lista
+        if(createNode(&item, str)){ //Si se consigue reservar memoria
+            (*lista)[fd] = item; //Guardamos el objeto en el lugar correspondiente
+            if(fd>(*lista)->last) (*lista)->last = fd; //Si el file descriptor excede el limite de la lista, este se vuelve el nuevo limite
             return true; //Exito devolvemos true
         }
     }
@@ -44,34 +46,22 @@ char * getCommand(tLista lista, int n){
     return r->cadena; // En otro caso devolvemos la cadena almacenada
 }
 
-bool insertFile(tLista* lista, char* path, int mode){
-    tItemL item = NULL; //Nuevo item
-    int i = 0; //Iniciamos contador
-    if(createNode(&item, path, mode, false)){ //Si se consigue reservar memoria
-        while((*lista)[i] != NULL) //Recorremos la lista hasta encontrar el primer hueco
-        {
-            i++;
-        }
-        if(i<MAX_LEN_LIST -1){//Comprobamos que la lista no este llena
-            (*lista)[i] = item; //Guardamos el objeto en el ultimo
-            (*lista)[i+1] = NULL; //Fijamos la siguiente posición en null
-            return true; //Exito devolvemos true
-        }
-    }
-    return false;  //En caso de fallo devolvemos false
+void deleteFile(tLista* lista, int fd){
+    free((*lista)[fd]); //Liberamos el contenido de lista[n]
+    (*lista)[fd] = NULL; //Ponemos lista[n] a NULL
+    if(fd==(*lista)->last) (*lista)->last--; //Si borramos el ultimo fichero, decrementamos el ultimo
 }
 
-void deleteFile(tLista* lista, int n){
-    free((*lista)[n]); //Liberamos el contenido de lista[n]
-    (*lista)[n] = NULL; //Ponemos lista[n] a NULL
-}
-
-void deleteList(tLista* lista, int n){
+void deleteList(tLista* lista){
     int i = 0; // Iniciamos un contador
-    if(n<0) n = MAX_LEN_LIST; //Si n negativo, comprobaremos todo el array
-    while(i<n){ //Recoremos el array entero
+    while(i<(*lista)->last){ //Recoremos el array entero
         free((*lista)[i]); //Liberamos memoria
         (*lista)[i] = NULL; //Asignamos NULL
         i++; //Incrementamos el indice
     }
+}
+
+char * getFile(tLista lista, int fd){
+    int mod = fcntl(fd,F_GETFL);
+    printf("descriptor: %d -> %s, %d\n",fd, lista[fd]->cadena, mod);
 }

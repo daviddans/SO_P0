@@ -2,26 +2,31 @@
 #include "p0_lib.h"
 #define MAX_LEN_LIST 4096 //elementos maximos en una lista
 
-//Definicion de tipos
-struct item { //Struct con 2 campos para guardar comandos o ficheros
-    char* cadena; //Cadena para guardar un comando / un directorio
-    int mod; //Modo de apertura (solo fichero)
-};
-typedef struct item* tItemL;//Tipo de dato a guardar en la lista (puntero a struct item)
-typedef tItemL tLista[MAX_LEN_LIST]; //Definicion de la lista (Array de punteros)
+//---Definicion de tipos---    
 
-//Funciones de la lista
+typedef char* tItemL//Cadena para guardar un comando / un directorio
+typedef tItemL tLista[MAX_LEN_LIST]; //Definicion de la lista (Array de cadenas(punteros))
+
+
+//---Funciones de la lista---
+
 void createEmptyList(tLista* lista); //Inicializa una lista a vacia
-bool insertComand(tLista* lista, char* cmd); //Inserta un comando a la lista
-char * getCommand(tLista lista, int n); //Devuelve el comando numero n de una lista
-bool insertFile(tLista* lista, char* path, int mode); //Inserta la información de un fichero
-void printFile(tLista* lista, int fd); //Imprime los datos del fichero con cierto fd de la lista dada
 
-//Borrar una lista entera. Se enfoca en borrar listas de comandos, ya que no se da el caso para los ficheros
-//n es el numero de comandos(usado para agilizar la tarea, si se pasa un numero negativo se revisara toda la lista)
-void deleteList(tLista* lista, int n);
+//Inserta un comando a la lista en el indice n
+//(Se presupone que los comandos estaran todos instertados al final y no habla eliminaciones por el medio)
+bool insertComand(tLista* lista, char* cmd, int n); 
+
+char * getCommand(tLista lista, int n); //Devuelve el comando numero n de una lista
+
+//Inserta la información de un fichero
+//(Se tiene en cuenta como el sistema asigna los fd)
+bool insertFile(tLista* lista, char* path, int fd); 
+
+void getFile(tLista lista, int fd); //Devuelve el nombre de un fichero dado su fd
+
+//Borrar una lista entera.(Se presupone que solo aplica para listas de comandos) 
+void deleteList(tLista* lista);
 
 //Borra el fichero n de una lista (Los elementos no se desplazaran de su indice) 
-//deleteFile no existe ya que no se da el caso de que se borre un unico comando de la lista
-//Aunque esta función serviria para ese proposito, no esta contemplado, y daría lugar a errores
-void deleteFile(tLista* lista, int n);
+//(Se presupone que no aplica para listas de comandos)
+void deleteFile(tLista* lista, int fd); //El fd(file descriptor) se corresponde al indice del array

@@ -6,6 +6,8 @@
 #include <time.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <fcntl.h> 
+#include <sys/utsname.h>
 
 //Funciones vinculadas a los comandos de la shell
 void exitShell(bool *term); //salir de la shell
