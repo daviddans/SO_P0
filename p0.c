@@ -11,7 +11,8 @@ void inputHandler(char * input, bool * onRunTime, int * cmdCount)
 	args = strtok(NULL," \n\t"); //Descartamos el primer trozo (comando) para quedarnos unicamente los argumentos
 	//Añadir comando al historial
 	//Cadena de condicionales para llamar a la función correspondiente al comando, para ver el codigo de cada función consultar p0_lib.c
-	if (input!=NULL){
+	if (input!=NULL)
+	{
 		if(strcmp(input,"bye")==0) exitShell(onRunTime);
 		else if(strcmp(input,"quit")==0) exitShell(onRunTime);
 		else if(strcmp(input,"exit")==0) exitShell(onRunTime);
