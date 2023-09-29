@@ -1,12 +1,13 @@
 #include "p0_lib.h"
 #include "p0_lista.h"
 
+
 int main(){
-    printf("--Probando lista--\n\n");
+    printf("--Probando lista CMD--\n\n");
     tList listaCMD;
-    tList lsitaFCH;
+    tList listaFCH;
     createEmptyList(&listaCMD);
-    createEmptyList(&lsitaFCH);
+    createEmptyList(&listaFCH);
     if(isEmptyList(listaCMD)) puts("ta vasio\n");
     insertCMD(&listaCMD, "comando 1");
     insertCMD(&listaCMD, "get");
@@ -20,5 +21,31 @@ int main(){
     }
     if(!isEmptyList(listaCMD)) deleteCMDList(&listaCMD);
     if(isEmptyList(listaCMD)) puts("Lista Borrada!!\n");
+    printf("--Probando lista FCH--\n\n");
+    if(isEmptyList(listaFCH)) puts("ta vasio\n");
+    insertFCH(&listaFCH, "biblia23",3);
+    insertFCH(&listaFCH, "biblia24",4);
+    insertFCH(&listaFCH, "biblia25",5);
+    insertFCH(&listaFCH, "biblia28",8);
+    insertFCH(&listaFCH, "biblia27",7);
+    insertFCH(&listaFCH, "biblia26",6);
+    
+        tPos pos = first(listaFCH);
+    tFile* file;
+    i = 1;
+    while(pos != NULL){
+        file = getData(listaFCH,pos);
+        printf("%d : %s\n",i, file->path);
+        i++;
+        pos = next(listaFCH, pos);
+    }
+
+    
+    if(isEmptyList(listaFCH)) puts("Sigue vasio??\n");
+    if(deleteFCH(&listaFCH,4)) puts("Borrado el 4\n");
+    if(getFHC(listaFCH,0) == NULL) puts("No hay 0\n");
+    if(getFHC(listaFCH,4) == NULL) puts("No hay 4\n");
+    insertFCH(&listaFCH, "LA santa bliblia",4);
+
     return 0;
 }

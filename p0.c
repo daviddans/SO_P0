@@ -1,6 +1,8 @@
 //Author1: David Dans Villares Login: david.dans.villares@udc.es
 //Author2: Pablo Teijeiro Torrón Login: pablo.teijeirot@udc.es
 
+//Falta implementar correctamente la lista, y las funciones que dependen de esta...
+
 #include "p0_lib.h"//Fichero con todas las dependencias del codigo
 #define MAX_IN 1000
 
