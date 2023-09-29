@@ -1,7 +1,6 @@
 /*las funciones entre puntos hay que implementarlas */
 
-void Cmd_open (char * tr[])
-{
+void Cmd_open (char * tr[]){
     int i,df, mode=0;
     
     if (tr[0]==NULL) { /*no hay parametro*/
@@ -24,7 +23,7 @@ void Cmd_open (char * tr[])
         ...........AnadirAFicherosAbiertos (descriptor...modo...nombre....)....
         printf ("Anadida entrada a la tabla ficheros abiertos..................",......);
 }
-
+}
 void Cmd_close (char *tr[])
 { 
     int df;
