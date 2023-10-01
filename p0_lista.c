@@ -90,39 +90,40 @@ bool insertFCH(tList* lista, char* str, int fd){ //NO FUNCIONA
     tPos i;
     tPos p = malloc(sizeof(struct node));
     tFile* file;
-    if(p != NULL && createFileNode(&p, str, fd)){
-        if(isEmptyList(*lista))
-        {
+    if(p != NULL && createFileNode(&p, str, fd)){ //Crear nodo y comprobar si se pudo reservar memoria
+        if(isEmptyList(*lista)){ //Insertar en lista vacia
             (*lista) = p;
         }
-        else{
-            file = (*lista)->data;
-            if(fd < file->fd){
-                p->next = (*lista);
-                (*lista)->next = p;
-                p->next = NULL;
-                puts("hasta aqui :D");
-            }
-            else if((*lista)->next != NULL){
-                i = (*lista);
-                file = (i->next->data);
-                while(i->next->next != NULL && file->fd < fd){
-                    i = i->next;
-                    if(i->next->data != NULL) file = (i->next->data);
+        else{ // Insertar en lista no vacia
+            i = (*lista);
+            file = i->data;
+            if(i->next == NULL){ //Unico elemento
+                if(file->fd > fd){ //Insertar delante
+                    p->next = i;
+                    (*lista) = p;
                 }
-                if(i->next !=NULL){
+                else{ //Insertar al final
+                    p->next = NULL;
+                    i->next = p;
+                }
+            }
+            else{ //Multiples elementos
+                file = i->next->data;
+                while(i->next != NULL && file->fd < fd){
+                    i = i->next;
+                    if(i->next != NULL) file = i->next->data;
+                }
+                if(i->next !=NULL){ //Insercion en el medio
                     p->next = i->next;
                     i->next = p;
                 }
-                else
-                i->next = p;
-                p->next = NULL;
-            }
-            else{
-                (*lista)->next = p;
-                p->next = NULL;
+                else{ // Insercion en el final
+                    p->next = NULL;
+                    i->next = p;
+                }
             }
         }
+        return true;
     }
     return false;
 }

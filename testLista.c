@@ -23,29 +23,38 @@ int main(){
     if(isEmptyList(listaCMD)) puts("Lista Borrada!!\n");
     printf("--Probando lista FCH--\n\n");
     if(isEmptyList(listaFCH)) puts("ta vasio\n");
-    insertFCH(&listaFCH, "biblia23",3);
-    insertFCH(&listaFCH, "biblia24",4);
-    insertFCH(&listaFCH, "biblia25",5);
-    insertFCH(&listaFCH, "biblia28",8);
-    insertFCH(&listaFCH, "biblia27",7);
-    insertFCH(&listaFCH, "biblia26",6);
-    
-        tPos pos = first(listaFCH);
+    if(insertFCH(&listaFCH, "biblia23",3))puts("1");
+    if(insertFCH(&listaFCH, "biblia24",4))puts("2");
+    if(insertFCH(&listaFCH, "biblia25",5))puts("3");
+    if(insertFCH(&listaFCH, "biblia28",8))puts("4");
+    if(insertFCH(&listaFCH, "biblia27",7))puts("5");
+    if(insertFCH(&listaFCH, "biblia26",6))puts("6");
+    if(insertFCH(&listaFCH, "biblia29",9))puts("7");
+    tPos pos = first(listaFCH);
     tFile* file;
     i = 1;
     while(pos != NULL){
         file = getData(listaFCH,pos);
-        printf("%d : %s\n",i, file->path);
+        printf("%d : %s fd: %d\n",i, file->path, file->fd);
         i++;
         pos = next(listaFCH, pos);
     }
+    if (pos == NULL) puts("final");
 
-    
     if(isEmptyList(listaFCH)) puts("Sigue vasio??\n");
     if(deleteFCH(&listaFCH,4)) puts("Borrado el 4\n");
     if(getFHC(listaFCH,0) == NULL) puts("No hay 0\n");
     if(getFHC(listaFCH,4) == NULL) puts("No hay 4\n");
     insertFCH(&listaFCH, "LA santa bliblia",4);
+
+    pos = first(listaFCH);
+    i = 1;
+    while(pos != NULL){
+    file = getData(listaFCH,pos);
+    printf("%d : %s\n",i, file->path);
+    i++;
+    pos = next(listaFCH, pos);
+    }
 
     return 0;
 }
