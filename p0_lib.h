@@ -1,13 +1,5 @@
 //Cabecera de las dependencias
-//Includes
-#include <stdio.h>
-#include <stdbool.h>
-#include <string.h>
-#include <time.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <fcntl.h> 
-#include <sys/utsname.h>
+#include "p0_lista.h" // Cabecera con la implementación de la lista de comandos y ficheros (e includes)
 
 //Funciones vinculadas a los comandos de la shell
 void exitShell(bool *term); //salir de la shell
@@ -17,3 +9,6 @@ void printDate(); //Imprime la fecha del sistema en formato /DD/MM/YYYY
 void printTime(); //Imprime la hora del sistema en formato hh:mm:ss
 void pid(char *args); //Imprime el pid de la shell actual o padre
 void changeDir(char* args); //Muestra la ruta actual o la cambia por la recibida en el parametro args
+void hist(char* args, tList* lista); //Muestra/borra el historico de comandos
+// Funciones auxiliares
+void printfFile(tFile file); //Imprime los datos de un fichero abierto

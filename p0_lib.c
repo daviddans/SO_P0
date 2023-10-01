@@ -1,6 +1,12 @@
 #include "p0_lib.h"//Fichero con las dependencias del codigo
 #define Max_len_dir 500
 
+//Funciones auxiliares
+void printfFile(tFile file){
+    //do something
+}
+
+
 //Funciones vinculadas a comandos de la shell
 //Salir de la Shell
 void exitShell(bool *b){
@@ -11,7 +17,7 @@ void exitShell(bool *b){
 //Imprimir mensajes de ayuda de los comandos. Solo se tiene en cuenta el primer parametro de args
 void help(char *args){ 
     // Si no recibe argumentos, imprimir una lista de los comandos disponibles
-    if(args==NULL)puts("quit exit bye help [cmd] authors [-n|-l] date time pid [-p] chdir [dir]\n");
+    if(args==NULL)puts("quit exit bye help [cmd] authors [-n|-l] date time pid [-p] chdir [dir] hist [-c|-N]\n");
     //Ayuda sobre el comando help
     else if(strcmp(args,"help") == 0) puts("help muestra una lista de los comandos disponibles\n  help [comando] muestra una ayuda detallada del comando\n");
     //Ayuda sobre los comandos exit, quit, y bye
@@ -26,6 +32,8 @@ void help(char *args){
     else if(strcmp(args,"pid")== 0) puts("pid muestra el identificador de la shell actual\n pid -p muestra el identificador del proceso padre\n");
     //Ayuda sobre el comando time
     else if(strcmp(args,"chdir")== 0) puts("chdir muestra el directorio actual\n  chdir [dir] cambia el directorio actual al especificado\n");
+    //Ayuda sobre el comando hist
+    else if(strcmp(args,"hist")== 0) puts("hist muestra el historial de comandos\n  hist [-c] borra el historial\n  hist [-N] imprime los N primeros comandos");
     //Si se introduce un comando no reconocido se mostrara un mensaje de error
     else puts("Error: Comando no reconocido\n");
 }
@@ -76,8 +84,24 @@ void changeDir(char *args){
     char dir[Max_len_dir]; //Creamos una variable para guardar el directorio actual
     if(args == NULL){ // Si no hay argumentos
         if(getcwd(dir,Max_len_dir)==0) printf("Directorio actual: %s\n",dir); //Guardamos el directorio actual y lo imprimimos
-        else perror("La longidud del directorio actual excede la esperada\n");
+        else perror("\n");
     }
     //Si hay argumentos 
     else if(chdir(args)!=0) printf("Error: Directorio: %s no encontrado.\n",args); //Se intenta cambiar al directorio introducido, si no se logra, imprimir un error
+}
+//Usar el historico de comandos
+void hist(tList* lista){
+    int i = 0;
+    int n;
+    if(args == NULL){ //Si no hay argumentos
+        if(isEmptyList(*lista)){
+            puts("Error en el historial de comandos\n");
+        }
+        else{
+            n = countCMD(*lista);
+            for(i = 0; i<n;i++){
+                printf("   %d --->  %s",i,getCMD(lista))
+            }
+        }
+    }
 }

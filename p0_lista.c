@@ -86,7 +86,7 @@ bool createFileNode(tPos* p, char* str, int fd){ //Funcion auxiliar que reserva 
     return r;
 }
 
-bool insertFCH(tList* lista, char* str, int fd){ //NO FUNCIONA
+bool insertFile(tList* lista, char* str, int fd){
     tPos i;
     tPos p = malloc(sizeof(struct node));
     tFile* file;
@@ -128,7 +128,7 @@ bool insertFCH(tList* lista, char* str, int fd){ //NO FUNCIONA
     return false;
 }
 
-tFile* getFHC(tList lista, int fd){
+tFile* getFile(tList lista, int fd){
     tPos i;
     tFile* file;
     if(!isEmptyList(lista)){
@@ -143,7 +143,7 @@ tFile* getFHC(tList lista, int fd){
     return NULL;
 }
 
-bool deleteFCH(tList* lista, int fd){
+bool deleteFile(tList* lista, int fd){
     tPos i;
     tPos delete;
     tFile* file;
