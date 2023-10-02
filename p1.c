@@ -46,5 +46,7 @@ int main(){
 			inputHandler(input, &onRunTime, &listaComandos, &listaFicheros);//Procesar entrada
 		}
 	}
+	deleteList(&listaComandos);
+	deleteList(&listaFicheros);
 	return 0;
 }

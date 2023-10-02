@@ -73,7 +73,7 @@ void printCMD(tList lista, int n){
     }
 }
 
-void deleteCMDList(tList* lista){
+void deleteList(tList* lista){
     tPos i = NULL;
     while((*lista) !=NULL){
         i = (*lista);
