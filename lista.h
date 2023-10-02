@@ -42,3 +42,4 @@ bool insertFile(tList* lista, char* str, int fd); //Inserta un fichero
 tFile* getFile(tList lista, int fd); //Devuelve un puntero a un fichero con cierto fd de una lista, o NULL si no se ha encontrado
 bool deleteFile(tList* lista, int fd);// Borra un fichero con cierto fd de la lista
 void deleteCMDList(tList* lista); //Devuelve una lista vacia(suponemos que no lo estaba previamente), habiendo liberado la memoria de forma correcta
+void printfFile(tFile file); //Imprime los datos de un fichero abierto

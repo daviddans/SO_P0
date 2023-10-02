@@ -1,10 +1,7 @@
-#include "p0_lib.h"//Fichero con las dependencias del codigo
+#include "p0_lib.h"
 #define Max_len_dir 500
 
-//Funciones auxiliares
-void printfFile(tFile file){
-    //do something
-}
+
 
 
 //Funciones vinculadas a comandos de la shell
@@ -90,7 +87,7 @@ void changeDir(char *args){
     else if(chdir(args)!=0) printf("Error: Directorio: %s no encontrado.\n",args); //Se intenta cambiar al directorio introducido, si no se logra, imprimir un error
 }
 //Usar el historico de comandos
-void hist(tList* lista){
+void hist(char* args, tList* lista){
     int i = 0;
     int n;
     if(args == NULL){ //Si no hay argumentos
@@ -100,7 +97,7 @@ void hist(tList* lista){
         else{
             n = countCMD(*lista);
             for(i = 0; i<n;i++){
-                printf("   %d --->  %s",i,getCMD(lista))
+                
             }
         }
     }

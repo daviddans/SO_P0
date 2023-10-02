@@ -1,4 +1,4 @@
-#include "p0_lista.h"
+#include "lista.h"
 
 void createEmptyList(tList* lista){
     (*lista) = NULL;
@@ -180,4 +180,8 @@ bool deleteFile(tList* lista, int fd){
         }
     }
     return false;
+}
+
+void printfFile(tFile file){
+    //do something
 }
