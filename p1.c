@@ -27,30 +27,28 @@ void inputHandler(char * input, bool * onRunTime, tList* listaComandos, tList* l
 	else if(strcmp(input,"chdir")==0) changeDir(args);
 	else if(strcmp(input,"hist")==0) hist(args,listaComandos);
 	else if(strcmp(input,"command")==0){//Command hace una llamada recursiva a la función para repetir la ejecución de un comando del historico
-		(*control)++;
-		printf("%d",*control);
-		if(*control<MAX_REC){
-			printf("%d",*control);
-			pos = first(*listaComandos);
-			puts("uno");
-			i = 0;
-			while(pos != NULL && i<atoi(args)){
-				pos = next(*listaComandos, pos);
-				i++;
+		(*control)++; //Aumentamos el contador de llamadas recursivas
+		if(*control<MAX_REC){ //Comprobamos no exceder nuestro limite recursivo
+			pos = first(*listaComandos); // Guardamos el primer elemento de la lista
+			i = 1; // Iniciamos un contador a 1
+			if(args == NULL){ //Si no hay argumentos
+				hist(args,listaComandos); //Mostramos el historial
 			}
-			if(pos == NULL) printf("No se encontro el comando: %s", args);
 			else{
-				free(args);
-				puts("1");
-				args = getData(*listaComandos, pos);
-				puts("2");
-				strcpy(input, args);
-				puts("3");
-				inputHandler(input, onRunTime, listaComandos, listaFicheros, control);
-				puts("4");
+				while(pos != NULL && i<atoi(args)){ //Rerorremos la lista hasta el comando numero N a repetir
+					pos = next(*listaComandos, pos);
+					i++;
+				}
+				if(pos == NULL) printf("No se encontro el comando: %s\n", args); // Si la posición es nula mostramos un error
+				else{
+					args = getData(*listaComandos, pos); //Reutilizamos args para guardar el comando a repetir
+					strcpy(input, args); //Copiamos args a input
+					printf("Ejecutando: %s\n", input); //Mostramos un mensaje de confirmacion
+					inputHandler(input, onRunTime, listaComandos, listaFicheros, control); //Llamada recursiva
+				}
 			}
 		}
-		else puts("Demasiada recursion!!!\n");
+		else puts("Demasiada recursion!!!\n"); // Maostramos un error si nos excedemos en el numero de recursiones
 	} 
 	else if(strcmp(input,"\n")!=0) printf("Comando no reconocido. Usa help para obtener una lista de comandos\n");//Si hay un comando no reconocido se imprime un error
 

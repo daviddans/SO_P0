@@ -29,7 +29,7 @@ void help(char *args){
     //Ayuda sobre el comando hist
     else if(strcmp(args,"hist")== 0) puts("hist muestra el historial de comandos\n  hist [-c] borra el historial\n  hist [-N] imprime los N primeros comandos\n");
     //Ayuda sobre el comando command
-    else if(strcmp(args,"command")== 0) puts("command N ejecuta de nuevo el comando numero N del historico\n");
+    else if(strcmp(args,"command")== 0) puts("command [N] ejecuta de nuevo el comando numero N del historico\n  command sin argumentos muestra el historico\n");
     //Si se introduce un comando no reconocido se mostrara un mensaje de error
     else puts("Error: Comando no reconocido\n");
 }
@@ -79,11 +79,12 @@ void pid(char *args){
 void changeDir(char *args){
     char dir[Max_len_dir]; //Creamos una variable para guardar el directorio actual
     if(args == NULL){ // Si no hay argumentos
-        if(getcwd(dir,Max_len_dir)==0) printf("Directorio actual: %s\n",dir); //Guardamos el directorio actual y lo imprimimos
+        getcwd(dir,Max_len_dir);
+        if(dir != NULL) printf("Directorio actual: %s\n",dir); //Guardamos el directorio actual y lo imprimimos
         else perror("\n");
     }
     //Si hay argumentos 
-    else if(chdir(args)!=0) printf("Error: Directorio: %s no encontrado.\n",args); //Se intenta cambiar al directorio introducido, si no se logra, imprimir un error
+    else if(chdir(args)!=0) perror("Error(chdir): "); //Se intenta cambiar al directorio introducido, si no se logra, imprimir un error
 }
 //Usar el historico de comandos
 void hist(char* args, tList* lista){
@@ -99,7 +100,7 @@ void hist(char* args, tList* lista){
         }
         else{ //Resto de argumentos
             n = atoi(args);
-            if(n > 0) printCMD(*lista, n);
+            if(n >= 0) printCMD(*lista, n);
             else printf("El comando hist no reconoce el parametro: %s\n",args);
         }
     }
