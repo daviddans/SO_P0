@@ -1,7 +1,4 @@
 #include "p0_lib.h"
-#define Max_len_dir 500 //Tamaño maximo de una dirección
-
-
 
 
 //Funciones vinculadas a comandos de la shell
@@ -14,7 +11,7 @@ void exitShell(bool *b){
 //Imprimir mensajes de ayuda de los comandos. Solo se tiene en cuenta el primer parametro de args
 void help(char *args){ 
     // Si no recibe argumentos, imprimir una lista de los comandos disponibles
-    if(args==NULL)puts("quit exit bye help [cmd] authors [-n|-l] date time pid [-p] chdir [dir] hist [-c|-N]\n");
+    if(args==NULL)puts("quit exit bye help [cmd] authors [-n|-l] date time pid [-p] chdir [dir] hist [-c|-N] command N\n");
     //Ayuda sobre el comando help
     else if(strcmp(args,"help") == 0) puts("help muestra una lista de los comandos disponibles\n  help [comando] muestra una ayuda detallada del comando\n");
     //Ayuda sobre los comandos exit, quit, y bye
@@ -30,7 +27,9 @@ void help(char *args){
     //Ayuda sobre el comando time
     else if(strcmp(args,"chdir")== 0) puts("chdir muestra el directorio actual\n  chdir [dir] cambia el directorio actual al especificado\n");
     //Ayuda sobre el comando hist
-    else if(strcmp(args,"hist")== 0) puts("hist muestra el historial de comandos\n  hist [-c] borra el historial\n  hist [-N] imprime los N primeros comandos");
+    else if(strcmp(args,"hist")== 0) puts("hist muestra el historial de comandos\n  hist [-c] borra el historial\n  hist [-N] imprime los N primeros comandos\n");
+    //Ayuda sobre el comando command
+    else if(strcmp(args,"command")== 0) puts("command N ejecuta de nuevo el comando numero N del historico\n");
     //Si se introduce un comando no reconocido se mostrara un mensaje de error
     else puts("Error: Comando no reconocido\n");
 }

@@ -1,6 +1,9 @@
 //Cabecera con las funciones de la practica 0
 #include "lista.h" // Cabecera con la implementación de la lista de comandos y ficheros (e includes)
 
+#define Max_len_dir 500 //Tamaño maximo de una dirección
+
+
 void exitShell(bool *term); //salir de la shell
 void help(char *args); //imprime una ayuda al usuario
 void authors(char *args); //Imprime el nombre y/o login de los autores
