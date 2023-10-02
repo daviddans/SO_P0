@@ -1,5 +1,5 @@
 #Regla para compilar p0 y dependencias
-compile: p1.c p1_lib.c p0_lib.c lista.c 
+p1: p1.c p1_lib.c p0_lib.c lista.c 
 	@gcc -o p1.out -Wall p1.c p1_lib.c p0_lib.c lista.c
 #Regla para borrar el codigo compilado
 clear:

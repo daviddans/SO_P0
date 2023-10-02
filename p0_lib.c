@@ -1,5 +1,5 @@
 #include "p0_lib.h"
-#define Max_len_dir 500
+#define Max_len_dir 500 //Tamaño maximo de una dirección
 
 
 
@@ -88,17 +88,20 @@ void changeDir(char *args){
 }
 //Usar el historico de comandos
 void hist(char* args, tList* lista){
-    int i = 0;
-    int n;
-    if(args == NULL){ //Si no hay argumentos
-        if(isEmptyList(*lista)){
-            puts("Error en el historial de comandos\n");
+    int n = 0;
+    if(isEmptyList(*lista)) puts("Error en el historial de comandos\n");
+    else {
+        args = strtok(args,"-");
+        if(args == NULL){ //Si no hay argumentos validos
+            printCMD(*lista, -1); // Imprimir todos los comandos
         }
-        else{
-            n = countCMD(*lista);
-            for(i = 0; i<n;i++){
-                
-            }
+        else if(strcmp(args,"c")== 0){ //Argumento -c (borrar la lista)
+            deleteCMDList(lista);
+        }
+        else{ //Resto de argumentos
+            n = atoi(args);
+            if(n > 0) printCMD(*lista, n);
+            else printf("El comando hist no reconoce el parametro: %s\n",args);
         }
     }
 }

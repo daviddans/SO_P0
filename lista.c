@@ -1,5 +1,5 @@
 #include "lista.h"
-
+#define MAX_CMD 1000 //Tamaño maximo de un comando a guardar
 void createEmptyList(tList* lista){
     (*lista) = NULL;
 }
@@ -24,7 +24,8 @@ bool insertCMD(tList* lista, cmd comand){
     tPos i;
     tPos p = malloc(sizeof(struct node));
     if(p != NULL){
-        p->data = comand;
+        p->data = malloc(sizeof(char)*strlen(comand)+1);//añadir control de errores
+        strcpy(p->data, comand);
         p->next = NULL;
         if((*lista) == NULL){
             (*lista) = p;
@@ -41,7 +42,7 @@ bool insertCMD(tList* lista, cmd comand){
     return r;
 }
 
-int countCMD(tList lista){
+int countCMD(tList lista){ // Sin uso 
     int i = 0;
     while(lista != NULL){
         lista = lista->next;
@@ -50,18 +51,26 @@ int countCMD(tList lista){
     return i;
 }
 
-char* getCMD(tList lista, int n){
-    int i = 0;
+void printCMD(tList lista, int n){
+    int i = 1;
     tPos p = lista;
-    char* retorno = NULL;
-    while(i < n && p != NULL){
+    char* cmd = NULL;
+    if(n < 0){
+        while(p != NULL){
+        cmd = p->data;
+        printf("    %d ---> %s",i,cmd);
         p = p->next;
         i++;
+        }
     }
-    if(p !=NULL){
-        retorno = p->data;
+    else{
+        while(i < n && p != NULL){
+        cmd = p->data;
+        printf("    %d ---> %s",i,cmd);
+        p = p->next;
+        i++;
+        }
     }
-    return retorno;
 }
 
 void deleteCMDList(tList* lista){
@@ -69,6 +78,7 @@ void deleteCMDList(tList* lista){
     while((*lista) !=NULL){
         i = (*lista);
         (*lista) = (*lista)->next;
+        free(i->data);
         free(i);
     }
 }

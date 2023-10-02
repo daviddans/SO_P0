@@ -35,7 +35,6 @@ tPos first(tList lista); //Devuelve la primera posición de una lista
 tPos last(tList lista); //Devuelve la ultima posición de una lista
 void* getData(tList lista, tPos p);//Devuelve un puntero void que apunta a un dato de la lista dada su posición
 //Funciones especificas de un tipo de dato
-int countCMD(tList lista); //Devuelve el numero de comandos de una lista 
 bool insertCMD(tList* lista, cmd comdando); //Inserta un comando en la lista(Unicamente se añaden al final de la lista)
 void printCMD(tList lista, int n);  // Imprime los primeros n comandos. Si n<0 se imprimiran todos los comandos
 bool insertFile(tList* lista, char* str, int fd); //Inserta un fichero 
