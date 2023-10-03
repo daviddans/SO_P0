@@ -27,6 +27,7 @@ void inputHandler(char * input, bool * onRunTime, tList* listaComandos, tList* l
 	else if(strcmp(input,"chdir")==0) changeDir(args);
 	else if(strcmp(input,"hist")==0) hist(args,listaComandos);
 	else if(strcmp(input,"open")==0) openfile(args,listaFicheros);
+	else if(strcmp(input,"dup")==0) dupfile(args,listaFicheros);
 	else if(strcmp(input,"command")==0){//Command hace una llamada recursiva a la función para repetir la ejecución de un comando del historico
 		(*control)++; //Aumentamos el contador de llamadas recursivas
 		if(*control<MAX_REC){ //Comprobamos no exceder nuestro limite recursivo

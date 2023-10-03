@@ -140,3 +140,18 @@ bool insertFile(tList* lista, char* str, int fd){
     return false;
 }
 
+tPos searchFile(tList lista, int fd){ //Devuelve la posicion de un archivo buscado por fd
+    tPos i = lista;
+    tFile * file = NULL;
+    if(!isEmptyList(lista)){ // comprobamos que la lista no este vacia
+        file = i->data;
+        while(i != NULL && file->fd < fd){ // recorremos la lista
+            i = i->next;
+            if(i !=NULL) file = i->data;
+        }
+        if(file->fd == fd){ // Si encontramos el elemento devolvemos su puntero
+            return i; 
+        }
+    }
+    return NULL; //Si no encontramos el elemento devolvemos NULL
+}

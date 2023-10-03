@@ -14,3 +14,4 @@ void changeDir(char* args); //Muestra la ruta actual o la cambia por la recibida
 void hist(char* args, tList* lista); //Muestra/borra el historico de comandos
 void printFiles(tList lista); //Funcion auxiliar: Imprime los archivos abiertos
 void openfile(char* args, tList* lista); //abre un archivo 
+void dupfile(char* args, tList* lista); //duplica un archivo
