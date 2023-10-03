@@ -1,7 +1,7 @@
+//Codigo de la practica p0
 #include "p0_lib.h"
 
 
-//Funciones vinculadas a comandos de la shell
 //Salir de la Shell
 void exitShell(bool *b){
     printf("\nSaliendo de la shell ^^\n"); //mensaje de salida
@@ -11,7 +11,7 @@ void exitShell(bool *b){
 //Imprimir mensajes de ayuda de los comandos. Solo se tiene en cuenta el primer parametro de args
 void help(char *args){ 
     // Si no recibe argumentos, imprimir una lista de los comandos disponibles
-    if(args==NULL)puts("quit exit bye help [cmd] authors [-n|-l] date time pid [-p] chdir [dir] hist [-c|-N] command N\n");
+    if(args==NULL)puts("quit :: exit :: bye :: help [cmd] :: authors [-n|-l] :: date :: time :: pid [-p] :: chdir [dir] :: hist [-c|-N] :: command [N] :: open [file][mode] ::\n");
     //Ayuda sobre el comando help
     else if(strcmp(args,"help") == 0) puts("help muestra una lista de los comandos disponibles\n  help [comando] muestra una ayuda detallada del comando\n");
     //Ayuda sobre los comandos exit, quit, y bye
@@ -30,6 +30,8 @@ void help(char *args){
     else if(strcmp(args,"hist")== 0) puts("hist muestra el historial de comandos\n  hist [-c] borra el historial\n  hist [-N] imprime los N primeros comandos\n");
     //Ayuda sobre el comando command
     else if(strcmp(args,"command")== 0) puts("command [N] ejecuta de nuevo el comando numero N del historico\n  command sin argumentos muestra el historico\n");
+    //Ayuda sobre el comando open
+    else if(strcmp(args,"open")== 0) puts("Open [file] [mode] sirve para abrir un archivo\n   [file] especifica la ruta\n   [mode] especifica los parametros de apertura(cr,ex,ro,wo,rw,ap,tr)\n   Si no hay argumentos se listaran los archivos ya abiertos\n");
     //Si se introduce un comando no reconocido se mostrara un mensaje de error
     else puts("Error: Comando no reconocido\n");
 }
@@ -100,8 +102,63 @@ void hist(char* args, tList* lista){
         }
         else{ //Resto de argumentos
             n = atoi(args);
-            if(n >= 0) printCMD(*lista, n);
+            if(n > 0) printCMD(*lista, n);
             else printf("El comando hist no reconoce el parametro: %s\n",args);
         }
+    }
+}
+
+void printFiles(tList lista){ //Funcion auxiliar para imprimir la lista de archivos abiertos
+    tPos i = first(lista); //Puntero al primero de la lista
+    tFile* file = NULL; // Puntero a un fichero
+    int mode = 0; // int para guardar el modo 
+    char mode_s[100] = "\0"; //string para imprimir los modos
+    while(i != NULL){ // Recorremos la lista hasta el final para imprimir cada elemento
+        file = getData(lista, i); //Recuperamos el fichero
+        mode = fcntl(file->fd, F_GETFL); //Recuperamos el modo de apertura
+        //Añadimos a mode_s todos los modos a imprimir
+        if((mode & O_CREAT) == O_CREAT) strcat(mode_s," O_CREAT");
+        if((mode & O_EXCL) == O_EXCL) strcat(mode_s," O_EXCL");
+        if((mode & O_RDWR) == O_RDWR) strcat(mode_s," O_RDWR");
+        if((mode & O_RDONLY) == O_RDONLY && (mode & O_RDWR) != O_RDWR) strcat(mode_s," O_RDONLY");
+        if((mode & O_WRONLY) == O_WRONLY && (mode & O_RDWR) != O_RDWR) strcat(mode_s," O_WRONLY");
+        if((mode & O_APPEND) == O_APPEND) strcat(mode_s," O_APPEND");
+        if((mode & O_TRUNC) == O_TRUNC) strcat(mode_s," O_TRUNC");
+        printf("descriptor: %d ---> %s%s\n",file->fd, file->path, mode_s); //Imprimimos todos los datos del fichero
+        i = next(lista, i); //Pasamos al siguiente
+        mode_s[0] = '\0'; //Reseteamos mode_s
+    }
+}
+
+void openfile(char* args, tList* lista){ //Abrir un fichero
+    int mode = 0; //int para guardar el mode
+    int fd = -1; //int para guardar el fd
+    char* path = NULL; //int para guardar la ruta del archivo
+    if(args == NULL) printFiles(*lista); //Si no hay argumentos : Imprimir archivos abiertos
+    else{
+        path = malloc(sizeof(char)*strlen(args)); //Reservamos memoria para guardar la direccion.
+        strcpy(path, args); //Copiamos la direccion
+        args = strtok(NULL," \n\t"); //Siguiente argumento
+        while(args != NULL){ //Comprobar modos introducidos
+            if (!strcmp(args,"cr")) mode|=O_CREAT;
+            else if (!strcmp(args,"ex")) mode|=O_EXCL;
+            else if (!strcmp(args,"ro")) mode|=O_RDONLY; 
+            else if (!strcmp(args,"wo")) mode|=O_WRONLY;
+            else if (!strcmp(args,"rw")) mode|=O_RDWR;
+            else if (!strcmp(args,"ap")) mode|=O_APPEND;
+            else if (!strcmp(args,"tr")) mode|=O_TRUNC; 
+            else {
+                printf("Error: Flag %s no valido\n", args);//Control de error de argumento no valido
+            }
+            args = strtok(NULL," \n\t");//Siguiente argumento
+        }
+        fd = open(path, mode); //Llamada al sistema y guardamos el fd resultante
+        if(fd > 0) {
+             //Si obtenemos un fd valido imprimimos una confirmación
+            if(insertFile(lista, path, fd)) printf("Añadida entrada nº %d (%s) a la lista de ficheros abiertos\n",fd, path); //Añadimos el fichero abierto a la lista
+            else puts("Error al intentar añadir elemento a la lista\n");
+        }
+        else perror("Error:"); //Si hay un error imprimimos el mensaje de error estandard del so
+        free(path); //Liberamos la memoria guardada
     }
 }

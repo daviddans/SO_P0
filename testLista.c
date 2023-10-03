@@ -1,5 +1,5 @@
 //Codigo para probara la funcionalidad de las listas
-#include "lista.h"
+#include "p1_lib.h"
 #define MAX_IN 500
 
 int main(){
@@ -20,4 +20,17 @@ int main(){
     insertCMD(&listaCMD, cmd);
     }
     printCMD(listaCMD, -1);
+
+
+    printf("--Probando lista FCH--\n\n");
+
+    for(int i = 0; i< 5;i++){
+	printf("--> ");//Imprimir prompt
+	fgets(input,MAX_IN,stdin);//Leer entrada estandar
+	printf("%s", input);
+    strcpy(cmd,input);
+    insertFile(&listaFCH, cmd, i);
+    }
+
+    printFiles(listaFCH);   
 }

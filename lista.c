@@ -1,3 +1,4 @@
+//Codigo de la lista
 #include "lista.h"
 #define MAX_CMD 1000 //Tamaño maximo de un comando a guardar
 void createEmptyList(tList* lista){
@@ -64,7 +65,7 @@ void printCMD(tList lista, int n){
         }
     }
     else{
-        while(i < n && p != NULL){
+        while(i <= n && p != NULL){
         cmd = p->data;
         printf("    %d ---> %s",i,cmd);
         p = p->next;
@@ -87,7 +88,8 @@ bool createFileNode(tPos* p, char* str, int fd){ //Funcion auxiliar que reserva 
     bool r = false;
     tFile* file = malloc(sizeof(tFile));
     if(file != NULL){
-        file->path = str;
+        file->path = malloc(sizeof(char)*strlen(str)+1);
+        strcpy(file->path, str);
         file->fd = fd;
         (*p)->data = file;
         (*p)->next = NULL;
@@ -138,60 +140,3 @@ bool insertFile(tList* lista, char* str, int fd){
     return false;
 }
 
-tFile* getFile(tList lista, int fd){
-    tPos i;
-    tFile* file;
-    if(!isEmptyList(lista)){
-        i = lista;
-        file = i->data;
-        while(i != NULL && file->fd < fd){
-            i = i->next;
-            file = i->data;
-        }
-        if(i!=NULL && file->fd == fd) return file;
-    }
-    return NULL;
-}
-
-bool deleteFile(tList* lista, int fd){
-    tPos i;
-    tPos delete;
-    tFile* file;
-    if(!isEmptyList(*lista)){
-        i = *lista;
-        file = i->data;
-        if(file->fd == fd){
-            (*lista)=(*lista)->next;
-            free(file);
-            free(i);
-            return true;
-        }
-        else if (i->next != NULL){
-            file = i->next->data;
-            while(i->next != NULL && file->fd < fd){
-                i = i->next;
-                file = i->next->data;
-            }
-            if(file->fd == fd){
-                if(i->next->next == NULL)
-                {
-                    delete = i->next;
-                    i->next = NULL;
-                }
-                else{
-                    delete = i->next;
-                    i->next = i->next->next;
-                }
-                file = delete->data;  
-                free(file);
-                free(delete);
-                return true;
-            }
-        }
-    }
-    return false;
-}
-
-void printfFile(tFile file){
-    //do something
-}

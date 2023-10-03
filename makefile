@@ -5,5 +5,5 @@ p1: p1.c p1_lib.c p0_lib.c lista.c
 clear:
 	@rm *.out
 #Regla para probar las listas 
-lista: testLista.c lista.c
-	@gcc -o testlista.out -Wall testLista.c lista.c 
+lista: testLista.c p1_lib.c p0_lib.c lista.c 
+	@gcc -o testlista.out -Wall testLista.c p1_lib.c p0_lib.c lista.c

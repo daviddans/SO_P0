@@ -12,3 +12,5 @@ void printTime(); //Imprime la hora del sistema en formato hh:mm:ss
 void pid(char *args); //Imprime el pid de la shell actual o padre
 void changeDir(char* args); //Muestra la ruta actual o la cambia por la recibida en el parametro args
 void hist(char* args, tList* lista); //Muestra/borra el historico de comandos
+void printFiles(tList lista); //Funcion auxiliar: Imprime los archivos abiertos
+void openfile(char* args, tList* lista); //abre un archivo 
