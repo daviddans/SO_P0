@@ -11,7 +11,7 @@ void exitShell(bool *b){
 //Imprimir mensajes de ayuda de los comandos. Solo se tiene en cuenta el primer parametro de args
 void help(char *args){ 
     // Si no recibe argumentos, imprimir una lista de los comandos disponibles
-    if(args==NULL)puts("quit :: exit :: bye :: help [cmd] :: authors [-n|-l] :: date :: time :: pid [-p] :: chdir [dir] :: hist [-c|-N] :: command [N] :: open [file][mode] :: dup [fd] ::\n");
+    if(args==NULL)puts("quit :: exit :: bye :: help [cmd] :: authors [-n|-l] :: date :: time :: pid [-p] :: chdir [dir] :: hist [-c|-N] :: command [N] :: open [file][mode] :: close [fd] :: dup [fd] :: listopen :: infosys\n");
     //Ayuda sobre el comando help
     else if(strcmp(args,"help") == 0) puts("help muestra una lista de los comandos disponibles\n  help [comando] muestra una ayuda detallada del comando\n");
     //Ayuda sobre los comandos exit, quit, y bye
@@ -32,8 +32,14 @@ void help(char *args){
     else if(strcmp(args,"command")== 0) puts("command [N] ejecuta de nuevo el comando numero N del historico\n  command sin argumentos muestra el historico\n");
     //Ayuda sobre el comando open
     else if(strcmp(args,"open")== 0) puts("open [file] [mode] sirve para abrir un archivo\n   [file] especifica la ruta\n   [mode] especifica los parametros de apertura(cr,ex,ro,wo,rw,ap,tr)\n   Si no hay argumentos se listaran los archivos ya abiertos\n");
+    //Ayuda sobre el comando close
+    else if(strcmp(args,"close")== 0) puts("close [fd] sirve para eliminar la entrada del fichero correspondiente al fd\nSi no hay argumentos se listaran los archivos ya abiertos\n");
     //Ayuda sobre el comando dup
     else if(strcmp(args,"dup")== 0) puts("dup [fd] sirve para duplicar la entrada del fichero correspondiente al fd\nSi no hay argumentos se listaran los archivos ya abiertos\n");
+    //Ayuda sobre el comando listopen
+    else if(strcmp(args,"listopen")== 0) puts("listopen sirve para mostrar la lista de archivos abiertos\n");
+    //Ayuda sobre el comando infosys
+    else if(strcmp(args,"infosys")== 0) puts("infosys sirve para mostrar las caracteristicas de la maquina actual\n");
     //Si se introduce un comando no reconocido se mostrara un mensaje de error
     else puts("Error: Comando no reconocido\n");
 }
@@ -165,18 +171,33 @@ void openfile(char* args, tList* lista){ //Abrir un fichero
     }
 }
 
-void dupfile(char* args, tList* lista){ //Duplicar un fichero abierto
-    int fd = -1; //int para guardar el fd
+int strToInt(char* str){ // Funcion auxiliar para convertir strings en enteros con un control de errores añadido
+    int r;
+    bool isNum = true;
+    for (int i = 0; str[i] != '\0'; i++){ //comprobamos si el string dado es convertible
+        if(str[i]<48 || str[i] > 57){
+            isNum = false; 
+            break;
+        }
+    }
+    if(isNum) r = atoi(str); //Si es convertible usamos la funcion atoi para convertirlo en entero
+    else r = -1; //En otro caso devolvemos -1 para controlar los posibles errores
+    return r;
+}
+
+void dupfile(char* args, tList* lista){ //Clonar el fd de un fichero abierto
+    int fd; //int para guardar el fd
     int fd2 = -1; //int para guardar el fd de la copia
     tFile* file = NULL; //puntero para guardar el fichero a duplicar
-    char* path = NULL;
+    char* path = NULL; //String para guardar el nombre / ruta del fichero duplicado
     if(args == NULL) printFiles(*lista); //Si no hay argumentos : Imprimir archivos abiertos
     else{
-        fd = atoi(args); //Guardamos el fd introducido
+        fd = strToInt(args);
         if((fd2=dup(fd)) == -1) perror("Error:"); //Llamada al sistema y guardamos el fd resultante. Si hay un error imprimimos el mensaje de error estandard del so
         else{ //Duplicamos la entrada en la lista de ficheros
             file = searchFile(*lista, fd)->data; //Buscamos el fichero duplicado
             path = malloc(sizeof(char)*strlen(file->path)+15); //Reservamos memoria para construir el nombre del fichero
+            path[0] = '\0';
             strcat(path, "dup ");
             strcat(path, args);
             strcat(path, " ");
@@ -186,4 +207,33 @@ void dupfile(char* args, tList* lista){ //Duplicar un fichero abierto
             free(path); //Liberamos la memoria guardada
         }
     }
+}
+
+void closefile(char* args, tList* lista){ //Cerrar un fichero abierto
+    int fd; //int para guardar el fd
+    if(args == NULL) printFiles(*lista); //Si no hay argumentos : Imprimir archivos abiertos
+    else{
+        fd = strToInt(args);
+        if(close(fd) == -1) perror("Error:"); //Llamada al sistema y guardamos el fd resultante. Si hay un error imprimimos el mensaje de error estandard del so
+        else{ //Duplicamos la entrada en la lista de ficheros
+            if(deleteFile(lista, fd)) printf("Borrada entrada nº %d en la lista de ficheros abiertos\n",fd); 
+            else puts("Error al borrar en la lista\n"); //Error si no se duplica la entrada en la lista
+        }
+    }
+}
+
+void listopen(char* args, tList* lista){
+    if(args == NULL) printFiles(*lista); 
+    else puts("Error: listopen no recibe mas argumentos");
+}
+
+void infosys(char* args){
+    struct utsname datos;
+    if(args == NULL){
+        if(uname(&datos) == 0){ //Llamada al sistema
+        printf("Machine name: %s\nOS:%s\n release: %s\n version: %s\n Architecture: %s\n",datos.nodename, datos.sysname, datos.release, datos.version, datos.machine);
+        }
+        else perror("Error:"); //Error en la llamada al sistema
+    }
+    else puts("Error: listopen no recive mas argumentos");
 }

@@ -155,3 +155,46 @@ tPos searchFile(tList lista, int fd){ //Devuelve la posicion de un archivo busca
     }
     return NULL; //Si no encontramos el elemento devolvemos NULL
 }
+
+bool deleteFile(tList* lista, int fd){ //Borra un archivo de la lista
+    tPos i;
+    tPos del;
+    tFile* file;
+    if(!isEmptyList(*lista)){ // comprobamos que la lista no este vacia
+        i = *lista;
+        file = i->data;
+        if(file->fd == fd){ //Eliminar primer elemento
+            *lista = (*lista)->next;
+            free(file->path);
+            free(file);
+            free(i);
+        }
+        else if(i->next != NULL){
+            file = i->next->data;
+            while(i->next != NULL && file->fd < fd){  //Buscar el elemento a borrar
+                i = i->next;
+                if(i->next != NULL) file = i->next->data;
+            }
+            if(file->fd == fd){ //Si se encontro el elemento a borrar
+                if(i->next->next != NULL){ //Borrado en el medio
+                del = i->next;
+                i->next = del->next;
+                file = del->data;
+                free(file->path);
+                free(del->data);
+                free(del);
+                }
+                else{ //Borrado al final
+                del = i->next;
+                i->next = NULL; 
+                file = del->data;
+                free(file->path);
+                free(del->data);
+                free(del);
+                }
+                return true;
+            }
+        }
+    }
+    return false;
+}
