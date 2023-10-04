@@ -144,7 +144,7 @@ void openfile(char* args, tList* lista){ //Abrir un fichero
     char* path = NULL; //int para guardar la ruta del archivo
     if(args == NULL) printFiles(*lista); //Si no hay argumentos : Imprimir archivos abiertos
     else{
-        path = malloc(sizeof(char)*strlen(args)); //Reservamos memoria para guardar la direccion.
+        path = malloc(sizeof(char)*strlen(args)+1); //Reservamos memoria para guardar la direccion.
         strcpy(path, args); //Copiamos la direccion
         args = strtok(NULL," \n\t"); //Siguiente argumento
         while(args != NULL){ //Comprobar modos introducidos
@@ -167,8 +167,8 @@ void openfile(char* args, tList* lista){ //Abrir un fichero
             else puts("Error al intentar añadir elemento a la lista\n");
         }
         else perror("Error:"); //Si hay un error imprimimos el mensaje de error estandard del so
-        free(path); //Liberamos la memoria guardada
     }
+     free(path); //Liberamos la memoria guardada
 }
 
 int strToInt(char* str){ // Funcion auxiliar para convertir strings en enteros con un control de errores añadido
