@@ -32,7 +32,8 @@ tPos next(tList lista, tPos p); //Devuelve la posición siguiente a una dada, o 
 tPos first(tList lista); //Devuelve la primera posición de una lista
 tPos last(tList lista); //Devuelve la ultima posición de una lista
 void* getData(tList lista, tPos p);//Devuelve un puntero void que apunta a un dato de la lista dada su posición
-void deleteList(tList* lista); //Vacia una lista(suponemos que no lo estaba previamente), habiendo liberado la memoria de forma correcta
+void deleteListCMD(tList* lista); //Vacia una lista de comandos(suponemos que no lo estaba previamente), habiendo liberado la memoria de forma correcta
+void deleteListFile(tList* lista); //Vacia una lista de ficheros(suponemos que no lo estaba previamente), habiendo liberado la memoria de forma correcta
 //Funciones especificas de un tipo de dato
 bool insertCMD(tList* lista, cmd comdando); //Inserta un comando en la lista(Unicamente se añaden al final de la lista)
 void printCMD(tList lista, int n);  //Imprime los primeros n comandos. Si n<0 se imprimiran todos los comandos

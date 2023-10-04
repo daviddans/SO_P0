@@ -85,7 +85,7 @@ int main(){
 		}
 	}
 	//Borrado de las listas
-	deleteList(&listaComandos);
-	deleteList(&listaFicheros);
+	deleteListCMD(&listaComandos);
+	deleteListFile(&listaFicheros);
 	return 0;
 }

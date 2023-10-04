@@ -106,7 +106,7 @@ void hist(char* args, tList* lista){
             printCMD(*lista, -1); // Imprimir todos los comandos
         }
         else if(strcmp(args,"c")== 0){ //Argumento -c (borrar la lista)
-            deleteList(lista);
+            deleteListCMD(lista);
         }
         else{ //Resto de argumentos
             n = atoi(args);

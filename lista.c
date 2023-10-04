@@ -74,7 +74,7 @@ void printCMD(tList lista, int n){
     }
 }
 
-void deleteList(tList* lista){
+void deleteListCMD(tList* lista){ //Borra una lista de comandos liberando memoria correctamente
     tPos i = NULL;
     while((*lista) !=NULL){
         i = (*lista);
@@ -83,6 +83,20 @@ void deleteList(tList* lista){
         free(i);
     }
 }
+
+void deleteListFile(tList* lista){ //Borra una lista de ficheros liberando memoria correctamente
+    tPos i = NULL;
+    tFile* file;
+    while((*lista) !=NULL){
+        i = (*lista);
+        (*lista) = (*lista)->next;
+        file = i->data;
+        free(file->path);
+        free(file);
+        free(i);
+    }
+}
+
 
 bool createFileNode(tPos* p, char* str, int fd){ //Funcion auxiliar que reserva memoria para añadir un fichero a una lista
     bool r = false;
