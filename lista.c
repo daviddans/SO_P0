@@ -98,13 +98,14 @@ void deleteListFile(tList* lista){ //Borra una lista de ficheros liberando memor
 }
 
 
-bool createFileNode(tPos* p, char* str, int fd){ //Funcion auxiliar que reserva memoria para añadir un fichero a una lista
+bool createFileNode(tPos* p, char* str, int fd, int mode){ //Funcion auxiliar que reserva memoria para añadir un fichero a una lista
     bool r = false;
     tFile* file = malloc(sizeof(tFile));
     if(file != NULL){
         file->path = malloc(sizeof(char)*strlen(str)+1);
         strcpy(file->path, str);
         file->fd = fd;
+        file->mode = mode;
         (*p)->data = file;
         (*p)->next = NULL;
         r = true;
@@ -112,11 +113,11 @@ bool createFileNode(tPos* p, char* str, int fd){ //Funcion auxiliar que reserva 
     return r;
 }
 
-bool insertFile(tList* lista, char* str, int fd){
+bool insertFile(tList* lista, char* str, int fd, int mode){
     tPos i;
     tPos p = malloc(sizeof(struct node));
     tFile* file;
-    if(p != NULL && createFileNode(&p, str, fd)){ //Crear nodo y comprobar si se pudo reservar memoria
+    if(p != NULL && createFileNode(&p, str, fd, mode)){ //Crear nodo y comprobar si se pudo reservar memoria
         if(isEmptyList(*lista)){ //Insertar en lista vacia
             (*lista) = p;
         }

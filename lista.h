@@ -16,6 +16,7 @@ typedef char* cmd; //Definimos un tipo para los comandos
 typedef struct file{ //Definimos un tipo para los ficheros
     char* path;
     int fd;
+    int mode;
 }tFile;
 //Definicion de lista dinamica
 typedef struct node* tPos; 
@@ -37,6 +38,6 @@ void deleteListFile(tList* lista); //Vacia una lista de ficheros(suponemos que n
 //Funciones especificas de un tipo de dato
 bool insertCMD(tList* lista, cmd comdando); //Inserta un comando en la lista(Unicamente se añaden al final de la lista)
 void printCMD(tList lista, int n);  //Imprime los primeros n comandos. Si n<0 se imprimiran todos los comandos
-bool insertFile(tList* lista, char* str, int fd); //Inserta un fichero 
+bool insertFile(tList* lista, char* str, int fd, int mode); //Inserta un fichero 
 bool deleteFile(tList* lista, int fd); //Borra un fichero con cierto fd de la lista
 tPos searchFile(tList lista, int fd); // Devuelve la posicion del fichero con cierto fd o nul si no existe

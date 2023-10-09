@@ -4,3 +4,6 @@
 *.obj
 *.elf
 *.out
+
+#carpeta para probar la shell
+/worktest

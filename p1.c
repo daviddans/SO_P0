@@ -68,9 +68,9 @@ int main(){
 	int control; //variable para controlar la recursion
 	createEmptyList(&listaComandos); //Inicialización lista
 	createEmptyList(&listaFicheros); //Inicialización lista
-	insertFile(&listaFicheros,"entrada estandar", 0);
-	insertFile(&listaFicheros,"salida estandar", 1);
-	insertFile(&listaFicheros,"error estandar", 2);
+	insertFile(&listaFicheros,"entrada estandar", 0, fcntl(0, F_GETFL)); //Añadimos a la lista los archivos abiertos heredados
+	insertFile(&listaFicheros,"salida estandar", 1, fcntl(1, F_GETFL)); //Añadimos a la lista los archivos abiertos heredados
+	insertFile(&listaFicheros,"error estandar", 2, fcntl(2, F_GETFL)); //Añadimos a la lista los archivos abiertos heredados
 	bool onRunTime = true; //Bool para controlar la ejecución del bucle
 	char input[MAX_IN]; //String para guardar la entrada del usuario
 	printf("Iniciando Shell ^^ Usa help para obtener una lista de comandos\n");//Mensaje de inicio

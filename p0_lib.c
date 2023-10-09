@@ -123,7 +123,8 @@ void printFiles(tList lista){ //Funcion auxiliar para imprimir la lista de archi
     char mode_s[100] = "\0"; //string para imprimir los modos
     while(i != NULL){ // Recorremos la lista hasta el final para imprimir cada elemento
         file = getData(lista, i); //Recuperamos el fichero
-        mode = fcntl(file->fd, F_GETFL); //Recuperamos el modo de apertura
+        mode = file->mode; //Recuperamos el modo de apertura guardado en la lista
+        mode |= fcntl(file->fd, F_GETFL); //Añadimos los que tenga el sistema guardado
         //Añadimos a mode_s todos los modos a imprimir
         if((mode & O_CREAT) == O_CREAT) strcat(mode_s," O_CREAT");
         if((mode & O_EXCL) == O_EXCL) strcat(mode_s," O_EXCL");
@@ -163,7 +164,7 @@ void openfile(char* args, tList* lista){ //Abrir un fichero
         fd = open(path, mode); //Llamada al sistema y guardamos el fd resultante
         if(fd > 0) {
              //Si obtenemos un fd valido imprimimos una confirmación
-            if(insertFile(lista, path, fd)) printf("Añadida entrada nº %d (%s) a la lista de ficheros abiertos\n",fd, path); //Añadimos el fichero abierto a la lista
+            if(insertFile(lista, path, fd, mode)) printf("Añadida entrada nº %d (%s) a la lista de ficheros abiertos\n",fd, path); //Añadimos el fichero abierto a la lista
             else puts("Error al intentar añadir elemento a la lista\n");
         }
         else perror("Error:"); //Si hay un error imprimimos el mensaje de error estandard del so
@@ -202,7 +203,7 @@ void dupfile(char* args, tList* lista){ //Clonar el fd de un fichero abierto
             strcat(path, args);
             strcat(path, " ");
             strcat(path, file->path);
-            if(insertFile(lista, path, fd2)) printf("Duplicada entrada nº %d a la lista de ficheros abiertos\n",fd); 
+            if(insertFile(lista, path, fd2, fcntl(file->fd, F_GETFL))) printf("Duplicada entrada nº %d a la lista de ficheros abiertos\n",fd); 
             else puts("Error al insertar en la lista\n"); //Error si no se duplica la entrada en la lista
             free(path); //Liberamos la memoria guardada
         }
