@@ -11,7 +11,7 @@ void exitShell(bool *b){
 //Imprimir mensajes de ayuda de los comandos. Solo se tiene en cuenta el primer parametro de args
 void help(char *args){ 
     // Si no recibe argumentos, imprimir una lista de los comandos disponibles
-    if(args==NULL)puts("quit :: exit :: bye :: help [cmd] :: authors [-n|-l] :: date :: time :: pid [-p] :: chdir [dir] :: hist [-c|-N] :: command [N] :: open [file][mode] :: close [fd] :: dup [fd] :: listopen :: infosys\n");
+    if(args==NULL) puts("quit :: exit :: bye :: help [cmd] :: authors [-n|-l] :: date :: time :: pid [-p] :: chdir [dir] :: hist [-c|-N] :: command [N] :: open [file][mode] :: close [fd] :: dup [fd] :: listopen :: infosys\ncreate [-f][name] :: stat [-long][-link][-acc] [name1 name2...] :: list [-reca][-recb][-hid][-long][-accl][name1,...] :: delete [name1, name2 ...] :: deltree [name1, name2 ...]\n");
     //Ayuda sobre el comando help
     else if(strcmp(args,"help") == 0) puts("help muestra una lista de los comandos disponibles\n  help [comando] muestra una ayuda detallada del comando\n");
     //Ayuda sobre los comandos exit, quit, y bye
@@ -40,6 +40,16 @@ void help(char *args){
     else if(strcmp(args,"listopen")== 0) puts("listopen sirve para mostrar la lista de archivos abiertos\n");
     //Ayuda sobre el comando infosys
     else if(strcmp(args,"infosys")== 0) puts("infosys sirve para mostrar las caracteristicas de la maquina actual\n");
+    //Ayuda sobre el comando create
+    else if(strcmp(args,"create")== 0) puts("create crea un nuevo archivo o directorio\n   [-f] especifica crear un fichero (por defecto sera directorio)\n   [name] sera el nombre el fichero/directorio creado\n");
+    //Ayuda sobre el comando stat
+    else if(strcmp(args,"stat")== 0) puts("stats lista los ficheros\n   [-long] muestra un listado largo\n   [-acc] muestra el accestime\n");
+    //Ayuda sobre el comando list
+    else if(strcmp(args,"list")== 0) puts("\n");
+    //Ayuda sobre el comando delete
+    else if(strcmp(args,"delete")== 0) puts("\n");
+    //Ayuda sobre el comando deltree
+    else if(strcmp(args,"deltree")== 0) puts("\n");
     //Si se introduce un comando no reconocido se mostrara un mensaje de error
     else puts("Error: Comando no reconocido\n");
 }
