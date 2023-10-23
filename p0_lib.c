@@ -171,7 +171,7 @@ void openfile(char* args, tList* lista){ //Abrir un fichero
             }
             args = strtok(NULL," \n\t");//Siguiente argumento
         }
-        fd = open(path, mode); //Llamada al sistema y guardamos el fd resultante
+        fd = open(path, mode,0777); //Llamada al sistema y guardamos el fd resultante
         if(fd > 0) {
              //Si obtenemos un fd valido imprimimos una confirmación
             if(insertFile(lista, path, fd, mode)) printf("Añadida entrada nº %d (%s) a la lista de ficheros abiertos\n",fd, path); //Añadimos el fichero abierto a la lista
@@ -225,7 +225,7 @@ void closefile(char* args, tList* lista){ //Cerrar un fichero abierto
     if(args == NULL) printFiles(*lista); //Si no hay argumentos : Imprimir archivos abiertos
     else{
         fd = strToInt(args);
-        if(close(fd) == -1) perror("Error:"); //Llamada al sistema y guardamos el fd resultante. Si hay un error imprimimos el mensaje de error estandard del so
+        if(close(fd) == -1) perror("Error al cerrar un archivo:"); //Llamada al sistema y guardamos el fd resultante. Si hay un error imprimimos el mensaje de error estandard del so
         else{ //Duplicamos la entrada en la lista de ficheros
             if(deleteFile(lista, fd)) printf("Borrada entrada nº %d en la lista de ficheros abiertos\n",fd); 
             else puts("Error al borrar en la lista\n"); //Error si no se duplica la entrada en la lista
