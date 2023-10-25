@@ -6,14 +6,14 @@
 
 char LetraTF (mode_t m)
 {
-     switch (m&S_IFMT) { /*and bit a bit con los bits de formato,0170000 */
-        case S_IFSOCK: return 's'; /*socket */
-        case S_IFLNK: return 'l'; /*symbolic link*/
-        case S_IFREG: return '-'; /* fichero normal*/
-        case S_IFBLK: return 'b'; /*block device*/
-        case S_IFDIR: return 'd'; /*directorio */ 
-        case S_IFCHR: return 'c'; /*char device*/
-        case S_IFIFO: return 'p'; /*pipe*/
+     switch (m&__S_IFMT) { /*and bit a bit con los bits de formato,0170000 */
+        case __S_IFSOCK: return 's'; /*socket */
+        case __S_IFLNK: return 'l'; /*symbolic link*/
+        case __S_IFREG: return '-'; /* fichero normal*/
+        case __S_IFBLK: return 'b'; /*block device*/
+        case __S_IFDIR: return 'd'; /*directorio */ 
+        case __S_IFCHR: return 'c'; /*char device*/
+        case __S_IFIFO: return 'p'; /*pipe*/
         default: return '?'; /*desconocido, no deberia aparecer*/
      }
 }

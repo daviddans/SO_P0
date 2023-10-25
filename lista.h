@@ -10,6 +10,11 @@
 #include <fcntl.h> 
 #include <sys/utsname.h>
 #include <sys/stat.h> 
+#include <pwd.h>
+#include <sys/types.h>
+#include <grp.h>
+#include <dirent.h>
+
 
 //Definicion de tipos
 typedef char* cmd; //Definimos un tipo para los comandos
