@@ -11,7 +11,7 @@ void exitShell(bool *b){
 //Imprimir mensajes de ayuda de los comandos. Solo se tiene en cuenta el primer parametro de args
 void help(char *args){ 
     // Si no recibe argumentos, imprimir una lista de los comandos disponibles
-    if(args==NULL) puts("quit :: exit :: bye :: help [cmd] :: authors [-n|-l] :: date :: time :: pid [-p] :: chdir [dir] :: hist [-c|-N] :: command [N] :: open [file][mode] :: close [fd] :: dup [fd] :: listopen :: infosys\ncreate [-f] name :: stat [-long][-link][-acc] name1 name2... :: list [-reca][-recb][-hid][-long][-accl] name1,... :: delete [name1, name2 ...] :: deltree name1, name2 ...\n");
+    if(args==NULL) puts("quit :: exit :: bye :: help [cmd] :: authors [-n|-l] :: date :: time :: pid [-p] :: chdir [dir] :: hist [-c|-N] :: command [N] :: open [file][mode] :: close [fd] :: dup [fd] :: listopen :: infosys\ncreate [-f] name :: stat [-long][-link][-acc] name1 name2... :: list [-reca][-recb][-hid][-long][-accl] name1,... :: delete name1, name2 ... :: deltree name1, name2 ...\n");
     //Ayuda sobre el comando help
     else if(strcmp(args,"help") == 0) puts("help muestra una lista de los comandos disponibles\n  help [comando] muestra una ayuda detallada del comando\n");
     //Ayuda sobre los comandos exit, quit, y bye
@@ -47,9 +47,9 @@ void help(char *args){
     //Ayuda sobre el comando list
     else if(strcmp(args,"list")== 0) puts("list muestra el estado de los ficheros de un directorio\n   [-reca | -recb] para listar directorios recursivamente(despues/antes)\n  [-hid] listar ficheros ocultos\n   [-long][-acc][-link] ver help stat");
     //Ayuda sobre el comando delete
-    else if(strcmp(args,"delete")== 0) puts("\n");
+    else if(strcmp(args,"delete")== 0) puts("delete borra los archivos o carpetas vacias especificados\n \n");
     //Ayuda sobre el comando deltree
-    else if(strcmp(args,"deltree")== 0) puts("\n");
+    else if(strcmp(args,"deltree")== 0) puts("delrtee borra recursivamente todo archivo y directoro contenido en las rutas dadas y sus subrutas\n   Usar con discrección la informacion borrada accidentalmente podria no ser recuperada");
     //Si se introduce un comando no reconocido se mostrara un mensaje de error
     else puts("Error: Comando no reconocido\n");
 }

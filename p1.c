@@ -34,6 +34,8 @@ void inputHandler(char * input, bool * onRunTime, tList* listaComandos, tList* l
 	else if(strcmp(input,"create")==0) create(args);
 	else if(strcmp(input,"stat")==0) showStat(args);
 	else if(strcmp(input,"list")==0) list(args);
+	else if(strcmp(input,"delete")==0) delete(args);
+	else if(strcmp(input,"deltree")==0) deltree(args);
 	else if(strcmp(input,"command")==0){//Command hace una llamada recursiva a la función para repetir la ejecución de un comando del historico(Comando de p0, debe estar aquí para poder llamar a funciones anteriores)
 		(*control)++; //Aumentamos el contador de llamadas recursivas
 		if(*control<MAX_REC){ //Comprobamos no exceder nuestro limite recursivo
