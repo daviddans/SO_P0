@@ -156,19 +156,56 @@ void list(char* args){ //Listar ficheros
             }
             else
             {
-                printf("************ %s ************\n",args); //Imprimir nomnre de la carpeta
                 if((directory = opendir(args)) == NULL) perror("Error en list:");
                 else{
-                    while ((file = readdir(directory)) != NULL)
-                    {
+                    if(recb){ //Recursividad antes
+                        while ((file = readdir(directory)) != NULL){
+                            if(file->d_name[0] == '.' && !hid) continue; //Saltar elementos ocultos salvo -hid
+                            if(file->d_type == 4){ //Mirar subcarpetas recursivamente antes
+                                buff[0] = '\0'; //Obtencion de ruta absoluta
+                                strcpy(buff,args);
+                                strcat(buff,"/");
+                                strcat(buff,file->d_name);
+                                if((rPath = realpath(buff, NULL)) == NULL) perror("Error en list:"); //Comprobamos haber obtenido la ruta absoluta
+                                else{
+                                    buff[0] = '\0'; //Construccion de argumentos para list
+                                    strcpy(buff,mode); //Añadimos argumentos de stat
+                                    strcat(buff,"-recb "); //Añadimos -recb
+                                    if(hid) strcat(buff,"-hid "); //Comprobamos si añadir -hid
+                                    strcat(buff,rPath); //Añadimos ruta absoluta
+                                    strtok(buff," \n\t"); //Troceamos la entrada
+                                    list(buff); //Llamada recursiva a list
+                                }
+                            }
+                        }
+                    }
+                    directory = opendir(args);
+                    printf("************ %s ************\n",args); //Imprimir nomnre de la carpeta
+                    while ((file = readdir(directory)) != NULL){
+                        if(file->d_name[0] == '.' && !hid) continue; //Saltar elementos ocultos salvo -hid
                         buff[0] = '\0'; //Obtencion de ruta absoluta
                         strcpy(buff,args);
                         strcat(buff,"/");
                         strcat(buff,file->d_name);
                         if((rPath = realpath(buff, NULL)) == NULL) perror("Error en list:"); //Comprobamos haber obtenido la ruta absoluta
                         else{
+                            buff[0] = '\0'; //Construccion de argumentos para stat
+                            strcpy(buff,mode); //Añadimos argumentos de stat
+                            strcat(buff,rPath); //Añadimos ruta absoluta
+                            strtok(buff," \n\t"); //Troceamos la entrada
+                            showStat(buff); //Llamada al comando stat
+                        }
+                    }
+                    if(reca && !recb){ //Recursividad despues
+                        while ((file = readdir(directory)) != NULL){
                             if(file->d_name[0] == '.' && !hid) continue; //Saltar elementos ocultos salvo -hid
-                            if(file->d_type == 4 && reca){ //Mirar subcarpetas recursivamente antes
+                            if(file->d_type == 4){ //Mirar subcarpetas recursivamente despues
+                                buff[0] = '\0'; //Obtencion de ruta absoluta
+                                strcpy(buff,args);
+                                strcat(buff,"/");
+                                strcat(buff,file->d_name);
+                                if((rPath = realpath(buff, NULL)) == NULL) perror("Error en list:"); //Comprobamos haber obtenido la ruta absoluta
+                                else{
                                 buff[0] = '\0'; //Construccion de argumentos para list
                                 strcpy(buff,mode); //Añadimos argumentos de stat
                                 strcat(buff,"-reca "); //Añadimos -reca
@@ -176,20 +213,7 @@ void list(char* args){ //Listar ficheros
                                 strcat(buff,rPath); //Añadimos ruta absoluta
                                 strtok(buff," \n\t"); //Troceamos la entrada
                                 list(buff); //Llamada recursiva a list
-                            }
-                            buff[0] = '\0'; //Construccion de argumentos para stat
-                            strcpy(buff,mode); //Añadimos argumentos de stat
-                            strcat(buff,rPath); //Añadimos ruta absoluta
-                            strtok(buff," \n\t"); //Troceamos la entrada
-                            showStat(buff); //Llamada al comando stat
-                            if(file->d_type == 4 && recb && !reca){ //Mirar subcarpetas recursivamente despues
-                                buff[0] = '\0'; //Construccion de argumentos para list
-                                strcpy(buff,mode); //Añadimos argumentos de stat
-                                strcat(buff,"-recb "); //Añadimos -recb
-                                if(hid) strcat(buff,"-hid"); //Comprobamos si añadir -hid
-                                strcat(buff,rPath); //Añadimos ruta absoluta
-                                strtok(buff," \n\t"); //Troceamos la entrada
-                                list(buff); //Llamada recursiva a list
+                                }
                             }
                         }
                     }
@@ -229,16 +253,24 @@ void deltree(char* args){ //Borrado recursivo de cualquier cosa (COMANDO PEGRILO
                     strcat(buff,"/");
                     strcat(buff,file->d_name);
                     if((rPath = realpath(buff, NULL)) == NULL) perror("Error en deltree:"); //Comprobamos haber obtenido la ruta absoluta
+                    else if(file->d_type == 4){ //Mirar subcarpetas recursivamente antes
+                        strcat(buff,rPath); //Añadimos ruta absoluta
+                        deltree(buff); //Llamada recursiva a deltree
+                    }
+                }
+                directory = opendir(args);
+                while ((file = readdir(directory)) != NULL)
+                {
+                    buff[0] = '\0'; //Obtencion de ruta absoluta
+                    strcpy(buff,args);
+                    strcat(buff,"/");
+                    strcat(buff,file->d_name);
+                    if((rPath = realpath(buff, NULL)) == NULL) perror("Error en deltree:"); //Comprobamos haber obtenido la ruta absoluta
                     else{
-                        if(file->d_type == 4){ //Mirar subcarpetas recursivamente antes
-                            strcat(buff,rPath); //Añadimos ruta absoluta
-                            deltree(buff); //Llamada recursiva a deltree
-                        }
                         buff[0] = '\0'; //Construccion de argumentos para stat
                         strcat(buff,rPath); //Añadimos ruta absoluta
                         delete(buff); //Llamada a delete
                         printf("\n\t-deleted: %s",args); //Mensaje de informacion 
-
                     }
                 }
                 closedir(directory);
