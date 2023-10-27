@@ -263,6 +263,9 @@ void deltree(char* args){ //Borrado recursivo de cualquier cosa (COMANDO PEGRILO
                         }
                     }
                 }
+            }
+            if((directory = opendir(args)) == NULL) perror("Error en deltree:");
+            else{
                 directory = opendir(args);
                 printf("*BORRANDO: %s *\n",args); //Imprimir nombre de la carpeta
                 while ((file = readdir(directory)) != NULL){
