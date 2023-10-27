@@ -223,6 +223,8 @@ void list(char* args){ //Listar ficheros
             }   
             args = strtok(NULL," \n\t"); 
         }
+        if(file != NULL)free(file); //Liberamos memoria reservada por readdir
+        if(directory != NULL)closedir(directory); //Liberamos memorida reservada por opendir
         if(rPath != NULL) free(rPath); //Liberamos memoria reservada por realpath
     }
 }
@@ -257,7 +259,6 @@ void deltree(char* args){ //Borrado recursivo de cualquier cosa (COMANDO PEGRILO
                         else{
                             buff[0] = '\0'; //Construccion de argumentos para list
                             strcat(buff,rPath); //Añadimos ruta absoluta
-                            strtok(buff," \n\t"); //Troceamos la entrada
                             puts(rPath);
                             deltree(buff); //Llamada recursiva a list
                         }
@@ -278,15 +279,15 @@ void deltree(char* args){ //Borrado recursivo de cualquier cosa (COMANDO PEGRILO
                     else{
                         buff[0] = '\0'; //Construccion de argumentos para stat
                         strcat(buff,rPath); //Añadimos ruta absoluta
-                        strtok(buff," \n\t"); //Troceamos la entrada
                         delete(buff); //Llamada al comando delete
                     }
                 }
-                closedir(directory); //Cerramos directorio
             }
             delete(args);
             args = strtok(NULL," \n\t"); //Siguiente argumento
         }
+        if(file != NULL)free(file); //Liberamos memoria reservada por readdir
+        if(directory != NULL)closedir(directory); //Liberamos memorida reservada por opendir
         if(rPath != NULL) free(rPath); //Liberamos memoria reservada por realpath
     }
 }
