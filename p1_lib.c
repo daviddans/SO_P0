@@ -196,6 +196,7 @@ void list(char* args){ //Listar ficheros
                             showStat(buff); //Llamada al comando stat
                         }
                     }
+                    directory = opendir(args);
                     if(reca && !recb){ //Recursividad despues
                         while ((file = readdir(directory)) != NULL){
                             if(file->d_name[0] == '.' && !hid) continue; //Saltar elementos ocultos salvo -hid
