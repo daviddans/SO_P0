@@ -231,7 +231,7 @@ void delete(char* args){ //Borrar ficheros o directorios vacios
     if(args == NULL) changeDir(args); //Sin argumentos imprimimos directorio actual
     else{
         if(remove(args) == -1) perror("Error en delete:"); //Llamada al sistema y control de errores
-        else printf("\n-deleted: %s",args); //Mensaje de informacion 
+        else printf("\t-deleted: %s\n",args); //Mensaje de informacion 
     }
 }
 
@@ -244,10 +244,10 @@ void deltree(char* args){ //Borrado recursivo de cualquier cosa (COMANDO PEGRILO
     else{
         while (args != NULL)
         {
-            printf("\n***BORRANDO: %s***\n",args); //Imprimir nombre de la carpeta
             if((directory = opendir(args)) == NULL) perror("Error en deltree:");
             else{
                 while ((file = readdir(directory)) != NULL){
+                    if(strcmp(file->d_name,".")== 0 || strcmp(file->d_name,"..")== 0) continue; //Ingoramos .(este directorio) y ..(directorio padre)
                     if(file->d_type == 4){ //Mirar subcarpetas recursivamente antes
                         buff[0] = '\0'; //Obtencion de ruta absoluta
                         strcpy(buff,args);
@@ -258,28 +258,31 @@ void deltree(char* args){ //Borrado recursivo de cualquier cosa (COMANDO PEGRILO
                             buff[0] = '\0'; //Construccion de argumentos para list
                             strcat(buff,rPath); //Añadimos ruta absoluta
                             strtok(buff," \n\t"); //Troceamos la entrada
+                            puts(rPath);
                             deltree(buff); //Llamada recursiva a list
                         }
                     }
                 }
                 directory = opendir(args);
-                    printf("*BORRANDO: %s *\n",args); //Imprimir nombre de la carpeta
-                    while ((file = readdir(directory)) != NULL){
-                        buff[0] = '\0'; //Obtencion de ruta absoluta
-                        strcpy(buff,args);
-                        strcat(buff,"/");
-                        strcat(buff,file->d_name);
-                        if((rPath = realpath(buff, NULL)) == NULL) perror("Error en list:"); //Comprobamos haber obtenido la ruta absoluta
-                        else{
-                            buff[0] = '\0'; //Construccion de argumentos para stat
-                            strcat(buff,rPath); //Añadimos ruta absoluta
-                            strtok(buff," \n\t"); //Troceamos la entrada
-                            delete(buff); //Llamada al comando delete
-                        }
+                printf("*BORRANDO: %s *\n",args); //Imprimir nombre de la carpeta
+                while ((file = readdir(directory)) != NULL){
+                    if(strcmp(file->d_name,".")== 0 || strcmp(file->d_name,"..")== 0) continue; //Ingoramos .(este directorio) y ..(directorio padre)
+                    buff[0] = '\0'; //Obtencion de ruta absoluta
+                    strcpy(buff,args);
+                    strcat(buff,"/");
+                    strcat(buff,file->d_name);
+                    if((rPath = realpath(buff, NULL)) == NULL) perror("Error en list:"); //Comprobamos haber obtenido la ruta absoluta
+                    else{
+                        buff[0] = '\0'; //Construccion de argumentos para stat
+                        strcat(buff,rPath); //Añadimos ruta absoluta
+                        strtok(buff," \n\t"); //Troceamos la entrada
+                        delete(buff); //Llamada al comando delete
                     }
-                closedir(directory);
-            } 
-            args = strtok(NULL," \n\t"); 
+                }
+                closedir(directory); //Cerramos directorio
+            }
+            delete(args);
+            args = strtok(NULL," \n\t"); //Siguiente argumento
         }
         if(rPath != NULL) free(rPath); //Liberamos memoria reservada por realpath
     }
