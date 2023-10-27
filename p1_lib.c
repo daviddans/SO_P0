@@ -180,7 +180,7 @@ void list(char* args){ //Listar ficheros
                         }
                     }
                     directory = opendir(args);
-                    printf("************ %s ************\n",args); //Imprimir nomnre de la carpeta
+                    printf("************ %s ************\n",args); //Imprimir nombre de la carpeta
                     while ((file = readdir(directory)) != NULL){
                         if(file->d_name[0] == '.' && !hid) continue; //Saltar elementos ocultos salvo -hid
                         buff[0] = '\0'; //Obtencion de ruta absoluta
@@ -240,51 +240,43 @@ void deltree(char* args){ //Borrado recursivo de cualquier cosa (COMANDO PEGRILO
     char* rPath = NULL; //String para direccion absoluta
     DIR* directory = NULL; //Puntero para guardar las direcciones
     struct dirent* file; //Struct para cada fichero de las direcciones
-    if(args == NULL) changeDir(args); //Sin argumentos imprimimos directorio actual
+    if(args == NULL) changeDir(args); //Sin argumentos impri;mimos directorio actual
     else{
         while (args != NULL)
         {
             printf("\n***BORRANDO: %s***\n",args); //Imprimir nombre de la carpeta
             if((directory = opendir(args)) == NULL) perror("Error en deltree:");
             else{
-                while ((file = readdir(directory)) != NULL)
-                {
-                    if(file->d_type == 4){ //Si no es directorio borramos
+                while ((file = readdir(directory)) != NULL){
+                    if(file->d_type == 4){ //Mirar subcarpetas recursivamente antes
                         buff[0] = '\0'; //Obtencion de ruta absoluta
                         strcpy(buff,args);
                         strcat(buff,"/");
                         strcat(buff,file->d_name);
-                        if((rPath = realpath(buff, NULL)) == NULL) perror("Error en deltree:"); //Comprobamos haber obtenido la ruta absoluta
-                        buff[0] = '\0'; //Obtencion de ruta absoluta
-                        strcat(buff,rPath); //Añadimos ruta absoluta
-                        deltree(buff); //Llamada recursiva a deltree
-                        delete(buff); //Llamada a delete
-                    }
-                    else{
-                        buff[0] = '\0'; //Obtencion de ruta absoluta
-                        strcpy(buff,args);
-                        strcat(buff,"/");
-                        strcat(buff,file->d_name);
-                        if((rPath = realpath(buff, NULL)) == NULL) perror("Error en deltree:"); //Comprobamos haber obtenido la ruta absoluta
-                        buff[0] = '\0'; //Obtencion de ruta absoluta
-                        strcat(buff,rPath); //Añadimos ruta absoluta
-                        delete(buff); //Llamada a delete
+                        if((rPath = realpath(buff, NULL)) == NULL) perror("Error en list:"); //Comprobamos haber obtenido la ruta absoluta
+                        else{
+                            buff[0] = '\0'; //Construccion de argumentos para list
+                            strcat(buff,rPath); //Añadimos ruta absoluta
+                            strtok(buff," \n\t"); //Troceamos la entrada
+                            deltree(buff); //Llamada recursiva a list
+                        }
                     }
                 }
                 directory = opendir(args);
-                while ((file = readdir(directory)) != NULL)
-                {
-                    if(file->d_type == 4){ //Si no es directorio borramos
+                    printf("*BORRANDO: %s *\n",args); //Imprimir nombre de la carpeta
+                    while ((file = readdir(directory)) != NULL){
                         buff[0] = '\0'; //Obtencion de ruta absoluta
                         strcpy(buff,args);
                         strcat(buff,"/");
                         strcat(buff,file->d_name);
-                        if((rPath = realpath(buff, NULL)) == NULL) perror("Error en deltree:"); //Comprobamos haber obtenido la ruta absoluta
-                        buff[0] = '\0'; //Obtencion de ruta absoluta
-                        strcat(buff,rPath); //Añadimos ruta absoluta
-                        delete(buff); //Llamada a delete
+                        if((rPath = realpath(buff, NULL)) == NULL) perror("Error en list:"); //Comprobamos haber obtenido la ruta absoluta
+                        else{
+                            buff[0] = '\0'; //Construccion de argumentos para stat
+                            strcat(buff,rPath); //Añadimos ruta absoluta
+                            strtok(buff," \n\t"); //Troceamos la entrada
+                            delete(buff); //Llamada al comando delete
+                        }
                     }
-                }
                 closedir(directory);
             } 
             args = strtok(NULL," \n\t"); 
