@@ -173,12 +173,15 @@ void list(char* args){ //Listar ficheros
                                     strcat(buff,"-recb "); //Añadimos -recb
                                     if(hid) strcat(buff,"-hid "); //Comprobamos si añadir -hid
                                     strcat(buff,rPath); //Añadimos ruta absoluta
+                                    if(rPath != NULL) free(rPath);
+                                    strcat(buff,"\0");//Añadimos final de string
                                     strtok(buff," \n\t"); //Troceamos la entrada
                                     list(buff); //Llamada recursiva a list
                                 }
                             }
                         }
                     }
+                    if(closedir(directory) == 0) directory = NULL;//Liberamos memorida reservada por opendir
                     directory = opendir(args);
                     printf("************ %s ************\n",args); //Imprimir nombre de la carpeta
                     while ((file = readdir(directory)) != NULL){
@@ -192,10 +195,14 @@ void list(char* args){ //Listar ficheros
                             buff[0] = '\0'; //Construccion de argumentos para stat
                             strcpy(buff,mode); //Añadimos argumentos de stat
                             strcat(buff,rPath); //Añadimos ruta absoluta
+                            if(rPath != NULL) free(rPath);
+                            strcat(buff,"\0");//Añadimos final de string
                             strtok(buff," \n\t"); //Troceamos la entrada
                             showStat(buff); //Llamada al comando stat
                         }
                     }
+                    if(closedir(directory) == 0) directory = NULL;//Liberamos memorida reservada por opendir
+                    else perror("Error en list:");
                     directory = opendir(args);
                     if(reca && !recb){ //Recursividad despues
                         while ((file = readdir(directory)) != NULL){
@@ -212,20 +219,19 @@ void list(char* args){ //Listar ficheros
                                 strcat(buff,"-reca "); //Añadimos -reca
                                 if(hid) strcat(buff,"-hid "); //Comprobamos si añadir -hid
                                 strcat(buff,rPath); //Añadimos ruta absoluta
+                                if(rPath != NULL) free(rPath);
+                                strcat(buff,"\0");//Añadimos final de string
                                 strtok(buff," \n\t"); //Troceamos la entrada
                                 list(buff); //Llamada recursiva a list
                                 }
                             }
                         }
                     }
-                    closedir(directory);
+                    if(closedir(directory) == 0) directory = NULL;//Liberamos memorida reservada por opendir
                 }
             }   
             args = strtok(NULL," \n\t"); 
         }
-        if(file != NULL)free(file); //Liberamos memoria reservada por readdir
-        if(directory != NULL)closedir(directory); //Liberamos memorida reservada por opendir
-        if(rPath != NULL) free(rPath); //Liberamos memoria reservada por realpath
     }
 }
 
@@ -259,14 +265,12 @@ void deltree(char* args){ //Borrado recursivo de cualquier cosa (COMANDO PEGRILO
                         else{
                             buff[0] = '\0'; //Construccion de argumentos para list
                             strcat(buff,rPath); //Añadimos ruta absoluta
-                            puts(rPath);
-                            deltree(buff); //Llamada recursiva a list
+                            if(rPath != NULL) free(rPath); //Liberamos memoria reservada por realpath
+                            deltree(buff); //Llamada recursiva a deltree
                         }
                     }
                 }
-            }
-            if((directory = opendir(args)) == NULL) perror("Error en deltree:");
-            else{
+                if(closedir(directory) == 0) directory = NULL;//Liberamos memorida reservada por opendir
                 directory = opendir(args);
                 printf("*BORRANDO: %s *\n",args); //Imprimir nombre de la carpeta
                 while ((file = readdir(directory)) != NULL){
@@ -279,15 +283,14 @@ void deltree(char* args){ //Borrado recursivo de cualquier cosa (COMANDO PEGRILO
                     else{
                         buff[0] = '\0'; //Construccion de argumentos para stat
                         strcat(buff,rPath); //Añadimos ruta absoluta
+                        if(rPath != NULL) free(rPath); //Liberamos memoria reservada por realpath
                         delete(buff); //Llamada al comando delete
                     }
                 }
+                if(closedir(directory) == 0) directory = NULL;//Liberamos memorida reservada por opendir
+                delete(args); //Borramos directorio vacio
             }
-            delete(args);
             args = strtok(NULL," \n\t"); //Siguiente argumento
         }
-        if(file != NULL)free(file); //Liberamos memoria reservada por readdir
-        if(directory != NULL)closedir(directory); //Liberamos memorida reservada por opendir
-        if(rPath != NULL) free(rPath); //Liberamos memoria reservada por realpath
     }
 }
