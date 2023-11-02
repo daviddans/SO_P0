@@ -2,7 +2,7 @@
 //Author2: Pablo Teijeiro Torrón Login: pablo.teijeirot@udc.es
 
 
-#include "p1_lib.h" //Cabecera con las dependencias del codigo
+#include "p2_lib.h" //Cabecera con las dependencias del codigo
 
 #define MAX_IN 1000 //Entrada maxima
 #define MAX_REC 10 //Numero maximo de recursiones
@@ -13,9 +13,10 @@ void inputHandler(char * input, bool * onRunTime, tList* listaComandos, tList* l
 {
 	int i; //variable para command N
 	tPos pos; //variable para command N
-	char * args = strtok(input," \n\t"); //Troceamos la entrada y la guardamos en una variable para poder gestionar los argumentos  
+	char * args_ptr; //Puntero para el funcionamiento de strtok_r
+	char * args = strtok_r(input," \n\t",&args_ptr); //Troceamos la entrada y la guardamos en una variable para poder gestionar los argumentos  
 	//Cadena de condicionales para llamar a la función correspondiente al comando, para ver el codigo de cada función consultar p0_lib.c
-	args = strtok(NULL," \n\t"); //Descartamos el primer trozo (comando) para quedarnos unicamente los argumentos
+	args = strtok_r(NULL," \n\t", &args_ptr); //Descartamos el primer trozo (comando) para quedarnos unicamente los argumentos
 	if(strcmp(input,"bye")==0) exitShell(onRunTime);
 	else if(strcmp(input,"quit")==0) exitShell(onRunTime);
 	else if(strcmp(input,"exit")==0) exitShell(onRunTime);
@@ -25,8 +26,8 @@ void inputHandler(char * input, bool * onRunTime, tList* listaComandos, tList* l
 	else if(strcmp(input,"time")==0) printTime();
 	else if(strcmp(input,"pid")==0) pid(args);
 	else if(strcmp(input,"chdir")==0) changeDir(args);
-	else if(strcmp(input,"hist")==0) hist(args,listaComandos);
-	else if(strcmp(input,"open")==0) openfile(args,listaFicheros);
+	else if(strcmp(input,"hist")==0) hist(args, &args_ptr, listaComandos);
+	else if(strcmp(input,"open")==0) openfile(args, &args_ptr, listaFicheros);
 	else if(strcmp(input,"close")==0) closefile(args,listaFicheros);
 	else if(strcmp(input,"dup")==0) dupfile(args,listaFicheros);
 	else if(strcmp(input,"listopen")==0) listopen(args,listaFicheros);
@@ -41,8 +42,8 @@ void inputHandler(char * input, bool * onRunTime, tList* listaComandos, tList* l
 		if(*control<MAX_REC){ //Comprobamos no exceder nuestro limite recursivo
 			pos = first(*listaComandos); // Guardamos el primer elemento de la lista
 			i = 1; // Iniciamos un contador a 1
-			if(args == NULL){ //Si no hay argumentos
-				hist(args,listaComandos); //Mostramos el historial
+			if(args == NULL){ //Si no hay argumentosclear
+				hist(args, &args_ptr, listaComandos); //Mostramos el historial
 			}
 			else{
 				while(pos != NULL && i<atoi(args)){ //Rerorremos la lista hasta el comando numero N a repetir

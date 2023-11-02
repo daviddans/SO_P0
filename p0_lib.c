@@ -107,11 +107,11 @@ void changeDir(char *args){
     else if(chdir(args)!=0) perror("Error(chdir): "); //Se intenta cambiar al directorio introducido, si no se logra, imprimir un error
 }
 //Usar el historico de comandos
-void hist(char* args, tList* lista){
+void hist(char* args, char**args_ptr, tList* lista){
     int n = 0;
     if(isEmptyList(*lista)) puts("Error en el historial de comandos\n");
     else {
-        args = strtok(args,"-");
+        args = strtok_r(args,"-",args_ptr);
         if(args == NULL){ //Si no hay argumentos validos
             printCMD(*lista, -1); // Imprimir todos los comandos
         }
@@ -149,7 +149,7 @@ void printFiles(tList lista){ //Funcion auxiliar para imprimir la lista de archi
     }
 }
 
-void openfile(char* args, tList* lista){ //Abrir un fichero
+void openfile(char* args, char** args_ptr, tList* lista){ //Abrir un fichero
     int mode = 0; //int para guardar el mode
     int fd = -1; //int para guardar el fd
     char* path = NULL; //int para guardar la ruta del archivo
@@ -157,7 +157,7 @@ void openfile(char* args, tList* lista){ //Abrir un fichero
     else{
         path = malloc(sizeof(char)*strlen(args)+1); //Reservamos memoria para guardar la direccion.
         strcpy(path, args); //Copiamos la direccion
-        args = strtok(NULL," \n\t"); //Siguiente argumento
+        args = strtok_r(NULL," \n\t", args_ptr); //Siguiente argumento
         while(args != NULL){ //Comprobar modos introducidos
             if (!strcmp(args,"cr")) mode|=O_CREAT;
             else if (!strcmp(args,"ex")) mode|=O_EXCL;
@@ -169,7 +169,7 @@ void openfile(char* args, tList* lista){ //Abrir un fichero
             else {
                 printf("Error: Flag %s no valido\n", args);//Control de error de argumento no valido
             }
-            args = strtok(NULL," \n\t");//Siguiente argumento
+            args = strtok_r(NULL," \n\t",args_ptr);//Siguiente argumento
         }
         fd = open(path, mode,0777); //Llamada al sistema y guardamos el fd resultante
         if(fd > 0) {

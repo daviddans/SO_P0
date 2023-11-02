@@ -1,5 +1,5 @@
 //Se usa la misma implementación para la lista de ficheros y la de comandos, por lo que el dato es un puntero void* y habra funciones para cada tipo
-
+//Para la p2 se añadira la posibilidad de guardar bloques de memoria
 //Includes (librerias para toda la practica)
 #include <stdio.h>
 #include <stdbool.h>
@@ -23,6 +23,14 @@ typedef struct file{ //Definimos un tipo para los ficheros
     int fd;
     int mode;
 }tFile;
+typedef struct memBlock{
+    int addres;
+    int size;
+    time_t allocTime;
+    char type[15];
+
+}tMemBlock;
+
 //Definicion de lista dinamica
 typedef struct node* tPos; 
 struct node{
@@ -46,3 +54,4 @@ void printCMD(tList lista, int n);  //Imprime los primeros n comandos. Si n<0 se
 bool insertFile(tList* lista, char* str, int fd, int mode); //Inserta un fichero 
 bool deleteFile(tList* lista, int fd); //Borra un fichero con cierto fd de la lista
 tPos searchFile(tList lista, int fd); // Devuelve la posicion del fichero con cierto fd o nul si no existe
+bool insertMemBlock(tList* lista, tMemBlock *memblock); //Añade la entrada de un bloque de memoria(siempre por el final)

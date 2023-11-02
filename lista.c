@@ -25,7 +25,8 @@ bool insertCMD(tList* lista, cmd comand){
     tPos i;
     tPos p = malloc(sizeof(struct node));
     if(p != NULL){
-        p->data = malloc(sizeof(char)*strlen(comand)+1);//añadir control de errores
+        p->data = malloc(sizeof(char)*strlen(comand)+1);
+        if(p->data == NULL) printf("ERROR EN INSERTCMD");
         strcpy(p->data, comand);
         p->next = NULL;
         if((*lista) == NULL){
@@ -213,3 +214,29 @@ bool deleteFile(tList* lista, int fd){ //Borra un archivo de la lista
     }
     return false;
 }
+
+
+ /*
+bool insertMemBlock(tList* lista, tMemBlock* memblock){ //Añade un bloque de memoria previamente creado
+    bool r;
+    tPos pos;
+    tPos i;
+    if((pos = malloc(sizeof(tPos))==NULL)) r = false;
+    else{
+        pos->data = memblock;
+        pos->next = NULL;
+        if(isEmptyList(*lista)) *lista = pos;
+        else{
+            i = *lista;
+            while (i->next = NULL);
+            {
+                i = i->next;
+            }
+            i->next = pos;
+        }
+        r = true;
+    }
+    return r;
+}   
+
+*/

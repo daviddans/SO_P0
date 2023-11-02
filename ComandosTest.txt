@@ -36,8 +36,10 @@ stat prueba
 stat -long prueba
 list -reca prueba
 list -recb prueba
-list -reca -recb -long -acc -hid prueba
+list -reca -recb -long -link -acc -hid prueba
 
 delete prueba
 delete ./prueba/prueba.txt
 deltree prueba
+
+list -reca -acc -hid prueba /home/david/Documentos
