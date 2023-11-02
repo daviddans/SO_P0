@@ -244,7 +244,7 @@ void delete(char* args){ //Borrar ficheros o directorios vacios
     }
 }
 
-void deltree(char* args, char** args_ptr){ //Borrado recursivo de cualquier cosa (COMANDO PEGRILOSO USAR VM)
+void deltree(char* args, char** args_ptr){ //Borrado recursivo de cualquier cosa (COMANDO PEGRILOSO)
     char buff[1000]; //Buffer para construir ruta absoluta
     char* buff_ptr; //Puntero para trocear buff
     char* rPath = NULL; //String para direccion absoluta

@@ -6,4 +6,4 @@ void create(char* args, char** args_ptr); //Crear archivos o directorios
 void showStat(char* args, char** args_ptr); //Muestra informacion de archivos o directorios
 void list(char* args, char** args_ptr); //Lista los contenidos de un directorio
 void delete(char* args); //Borra archivos o directorios vacios
-void deltree(char* args, char** args_ptr); //Borra de forma recursiva archivos y directorios (FUNCION PEGRILOSA USAR VM)
+void deltree(char* args, char** args_ptr); //Borra de forma recursiva archivos y directorios (FUNCION PEGRILOSA)
