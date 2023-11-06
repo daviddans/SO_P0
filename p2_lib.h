@@ -2,6 +2,8 @@
 
 #include "p1_lib.h" //Inclusion de librerías de las practicas antetriores
 
+#define TAMANO 2048
+
 void doMalloc(); //reserva o libera un bloque malloc de memoria
 void doShared(); //reserva o libera un bloque shared de memoria
 void doMmap(); //mapea o desmapea un fichero en memoria
@@ -10,4 +12,4 @@ void doWrite(); //escribe en un fichero los contenidos de una dirección de memo
 void doMemdump(); //vuelca los contenidos de una dirección de memoria en la pantalla
 void doMemfill(); //llena la memoria con un caracter
 void doMem(); //muestra información de la memoria de los procesos
-void doRecurse(); //ejecuta una funcion recursiva
+void doRecurse(int n); //ejecuta una funcion recursiva

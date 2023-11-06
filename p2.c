@@ -37,6 +37,7 @@ void inputHandler(char * input, bool * onRunTime, tList* listaComandos, tList* l
 	else if(strcmp(input,"list")==0) list(args, &args_ptr);
 	else if(strcmp(input,"delete")==0) delete(args);
 	else if(strcmp(input,"deltree")==0) deltree(args, &args_ptr);
+	else if(strcmp(input,"recurse")==0) doRecurse(strToInt(args));
 	else if(strcmp(input,"command")==0){//Command hace una llamada recursiva a la función para repetir la ejecución de un comando del historico(Comando de p0, debe estar aquí para poder llamar a funciones anteriores)
 		(*control)++; //Aumentamos el contador de llamadas recursivas
 		if(*control<MAX_REC){ //Comprobamos no exceder nuestro limite recursivo
@@ -71,6 +72,7 @@ void inputHandler(char * input, bool * onRunTime, tList* listaComandos, tList* l
 int main(){
 	tList listaComandos; //Lista para el historial de comandos
 	tList listaFicheros; //Lista para los ficheros abiertos
+	tList mapedMemory; //Lista para la memoria mapeada
 	int control; //variable para controlar la recursion
 	createEmptyList(&listaComandos); //Inicialización lista
 	createEmptyList(&listaFicheros); //Inicialización lista

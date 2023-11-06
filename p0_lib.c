@@ -50,6 +50,8 @@ void help(char *args){
     else if(strcmp(args,"delete")== 0) puts("delete borra los archivos o carpetas vacias especificados\n \n");
     //Ayuda sobre el comando deltree
     else if(strcmp(args,"deltree")== 0) puts("delrtee borra recursivamente todo archivo y directoro contenido en las rutas dadas y sus subrutas\n   Usar con discrección la informacion borrada accidentalmente podria no ser recuperada");
+    //Ayuda sobre el comando recurse
+    else if(strcmp(args,"recurse")== 0) puts("recurse n Invoca a la funcion recursiva n veces\n");
     //Si se introduce un comando no reconocido se mostrara un mensaje de error
     else puts("Error: Comando no reconocido\n");
 }
@@ -182,7 +184,7 @@ void openfile(char* args, char** args_ptr, tList* lista){ //Abrir un fichero
      free(path); //Liberamos la memoria guardada
 }
 
-int strToInt(char* str){ // Funcion auxiliar para convertir strings en enteros con un control de errores añadido
+int strToInt(char* str){ // Funcion auxiliar para convertir strings en enteros positivos con un control de errores añadido
     int r;
     bool isNum = true;
     for (int i = 0; str[i] != '\0'; i++){ //comprobamos si el string dado es convertible

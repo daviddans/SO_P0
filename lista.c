@@ -215,28 +215,72 @@ bool deleteFile(tList* lista, int fd){ //Borra un archivo de la lista
     return false;
 }
 
+tMemBlock* newMemBlock(void* addres, size_t size, time_t allocTime, enum Type tipo, __key_t key, char name[], int fd){//Crea un bloque de memoria 
+    tMemBlock* p = malloc(sizeof(tMemBlock)); //Reservamos memoria
+    if(p != NULL){
+        p->addres = addres; //Guardamos direccion
+        p->size = size; //Guardamos tamañ0
+        time(&(p->allocTime)); //Guardamos hora
+        p->tipo = tipo; //Guardamos tipo
+        if(tipo == shm) p->key = key; //Guardamos clave de shm
+        if(tipo == map) {
+            p->file = malloc(sizeof(char)*(len(name)+1));
+            strcpy(p->file,name);
+            p->fd = fd;
+        }
+    }
+}
 
- /*
-bool insertMemBlock(tList* lista, tMemBlock* memblock){ //Añade un bloque de memoria previamente creado
-    bool r;
+
+bool insertMemBlock(tList* lista, tMemBlock* memblock){ //Añade un bloque de memoria previamente creado a la lista
+    bool r; //Bool para guardar el retorno
     tPos pos;
-    tPos i;
-    if((pos = malloc(sizeof(tPos))==NULL)) r = false;
+    if(memblock == NULL || (pos = malloc(sizeof(tPos))==NULL)) r = false; //Comprobamos que la reserva de memoria sea correcta
     else{
-        pos->data = memblock;
+        pos->data = memblock; //Guardamos los datos
         pos->next = NULL;
-        if(isEmptyList(*lista)) *lista = pos;
-        else{
-            i = *lista;
-            while (i->next = NULL);
-            {
-                i = i->next;
-            }
-            i->next = pos;
+        if(isEmptyList(*lista)) *lista = pos; //Si la lista es vacia insertamos como unico elemento
+        else{//Si no insertamos al principio (mayor eficiencia)
+            pos->next = *lista;
+            *lista = pos;
         }
         r = true;
     }
     return r;
 }   
+void freeMemblock(tMemBlock* ){ //Funcion auxiliar para liberar memoria de un bloque de memoria
+    
+}
 
-*/
+void deleteMemBlockIn(tList* lista, tPos p){ //Boramos el item de la posicion p
+    tPos i;
+    if(p == *lista){
+        *lista = p->next; // Comprobamos si es el primer elemento
+        freeMemblock(p);
+    }
+    else{
+        while (i!= NULL && i->next != p) //Recorremos la lista
+        {
+            i = i->next;
+        }
+        if(i->next == p){ //Si encontramos el elemento
+            i->next = p->next;
+        }
+    }
+}
+
+tPos findKey(tList lista, __key_t key){ //Busca un elemento por el campo key
+    tPos i = lista;
+    tMemBlock * memBlock = NULL;
+    if(!isEmptyList(lista)){ // comprobamos que la lista no este vacia
+        memBlock = i->data;
+        while(i != NULL && memBlock->key != key){ // recorremos la lista
+            i = i->next;
+            if(i !=NULL) memBlock = i->data;
+        }
+        if(memBlock->key == key){ // Si encontramos el elemento devolvemos su puntero
+            return i; 
+        }
+    }
+    return NULL; //Si no encontramos el elemento devolvemos NULL
+}

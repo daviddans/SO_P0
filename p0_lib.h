@@ -18,3 +18,5 @@ void closefile(char* args, tList* lista); //cerrar un fichero
 void dupfile(char* args, tList* lista); //duplica un archivo
 void listopen(char* args, tList* lista); //Lista los archivos abiertos
 void infosys(char* args); //Imprime información del sistema actual
+
+int strToInt(char* str);//Funcion auxiliar para convertir strings en enteros positivos con un control de errores añadido
