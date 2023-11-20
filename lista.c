@@ -224,18 +224,19 @@ tMemBlock* newMemBlock(void* addres, size_t size, time_t allocTime, enum Type ti
         p->tipo = tipo; //Guardamos tipo
         if(tipo == shm) p->key = key; //Guardamos clave de shm
         if(tipo == map) {
-            p->file = malloc(sizeof(char)*(len(name)+1));
+            p->file = malloc(sizeof(char)*(strlen(name)+1));
             strcpy(p->file,name);
             p->fd = fd;
         }
     }
+    return p;
 }
 
 
 bool insertMemBlock(tList* lista, tMemBlock* memblock){ //Añade un bloque de memoria previamente creado a la lista
     bool r; //Bool para guardar el retorno
     tPos pos;
-    if(memblock == NULL || (pos = malloc(sizeof(tPos))==NULL)) r = false; //Comprobamos que la reserva de memoria sea correcta
+    if(memblock == NULL || (pos = malloc(sizeof(tPos)))==NULL) r = false; //Comprobamos que la reserva de memoria sea correcta
     else{
         pos->data = memblock; //Guardamos los datos
         pos->next = NULL;
@@ -248,15 +249,17 @@ bool insertMemBlock(tList* lista, tMemBlock* memblock){ //Añade un bloque de me
     }
     return r;
 }   
-void freeMemblock(tMemBlock* ){ //Funcion auxiliar para liberar memoria de un bloque de memoria
-    
+void freeMemblock(tMemBlock* memBlock){ //Funcion auxiliar para liberar memoria de un bloque de memoria
+    if(memBlock->tipo == map) free(memBlock->file);
+    free(memBlock);
 }
 
 void deleteMemBlockIn(tList* lista, tPos p){ //Boramos el item de la posicion p
     tPos i;
     if(p == *lista){
         *lista = p->next; // Comprobamos si es el primer elemento
-        freeMemblock(p);
+        freeMemblock(p->data);
+        free(p);
     }
     else{
         while (i!= NULL && i->next != p) //Recorremos la lista
@@ -265,6 +268,8 @@ void deleteMemBlockIn(tList* lista, tPos p){ //Boramos el item de la posicion p
         }
         if(i->next == p){ //Si encontramos el elemento
             i->next = p->next;
+            freeMemblock(p->data);
+            free(p);
         }
     }
 }
