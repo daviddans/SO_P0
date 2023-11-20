@@ -7,3 +7,5 @@ void showStat(char* args, char** args_ptr); //Muestra informacion de archivos o 
 void list(char* args, char** args_ptr); //Lista los contenidos de un directorio
 void delete(char* args); //Borra archivos o directorios vacios
 void deltree(char* args, char** args_ptr); //Borra de forma recursiva archivos y directorios (FUNCION PEGRILOSA)
+
+char* getNombre(char *path); //Funcion auxiliar paara obtener el nombre de un archivo/directorio dada su ruta

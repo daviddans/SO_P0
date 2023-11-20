@@ -215,7 +215,7 @@ bool deleteFile(tList* lista, int fd){ //Borra un archivo de la lista
     return false;
 }
 
-tMemBlock* newMemBlock(void* addres, size_t size, time_t allocTime, enum Type tipo, __key_t key, char name[], int fd){//Crea un bloque de memoria 
+tMemBlock* newMemBlock(void* addres, size_t size, time_t allocTime, Type tipo, __key_t key, char name[], int fd){//Crea un bloque de memoria 
     tMemBlock* p = malloc(sizeof(tMemBlock)); //Reservamos memoria
     if(p != NULL){
         p->addres = addres; //Guardamos direccion
@@ -224,8 +224,8 @@ tMemBlock* newMemBlock(void* addres, size_t size, time_t allocTime, enum Type ti
         p->tipo = tipo; //Guardamos tipo
         if(tipo == shm) p->key = key; //Guardamos clave de shm
         if(tipo == map) {
-            p->file = malloc(sizeof(char)*(strlen(name)+1));
-            strcpy(p->file,name);
+            p->filename = malloc(sizeof(char)*(strlen(name)+1));
+            strcpy(p->filename, name);
             p->fd = fd;
         }
     }
@@ -250,7 +250,7 @@ bool insertMemBlock(tList* lista, tMemBlock* memblock){ //Añade un bloque de me
     return r;
 }   
 void freeMemblock(tMemBlock* memBlock){ //Funcion auxiliar para liberar memoria de un bloque de memoria
-    if(memBlock->tipo == map) free(memBlock->file);
+    if(memBlock->tipo == map) free(memBlock->filename);
     free(memBlock);
 }
 
@@ -284,6 +284,34 @@ tPos findKey(tList lista, __key_t key){ //Busca un elemento por el campo key
             if(i !=NULL) memBlock = i->data;
         }
         if(memBlock->key == key){ // Si encontramos el elemento devolvemos su puntero
+            return i; 
+        }
+    }
+    return NULL; //Si no encontramos el elemento devolvemos NULL
+}
+
+void deleteMemList(tList* lista){ //Elimina lista de memblocks
+    tPos i = NULL;
+    tMemBlock* memBlock;
+    while((*lista) !=NULL){
+        i = (*lista);
+        (*lista) = (*lista)->next;
+        memBlock = i->data;
+        freeMemblock(memBlock);
+        free(i);
+    }
+}
+
+tPos searchBySiceAndType(tList lista, size_t tam, Type tipo){ //Devuelve la posicion de la primera coincidencia
+    tPos i = lista;
+    tMemBlock * memBlock = NULL;
+    if(!isEmptyList(lista)){ // comprobamos que la lista no este vacia
+        memBlock = i->data;
+        while(i != NULL && !(memBlock->size == tam && memBlock->tipo == tipo)){ // recorremos la lista
+            i = i->next;
+            if(i !=NULL) memBlock = i->data;
+        }
+        if(memBlock->size == tam && memBlock->tipo == tipo){ // Si encontramos el elemento devolvemos su puntero
             return i; 
         }
     }

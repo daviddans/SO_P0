@@ -9,7 +9,7 @@
 
 
 //Funcion para gestionar los comandos y parametros introducidos
-void inputHandler(char * input, bool * onRunTime, tList* listaComandos, tList* listaFicheros, int* control)
+void inputHandler(char * input, bool * onRunTime, tList* listaComandos, tList* listaFicheros, tList* memory, int* control)
 {
 	int i; //variable para command N
 	tPos pos; //variable para command N
@@ -37,6 +37,7 @@ void inputHandler(char * input, bool * onRunTime, tList* listaComandos, tList* l
 	else if(strcmp(input,"list")==0) list(args, &args_ptr);
 	else if(strcmp(input,"delete")==0) delete(args);
 	else if(strcmp(input,"deltree")==0) deltree(args, &args_ptr);
+	else if(strcmp(input,"malloc")==0) doMalloc(args, &args_ptr, memory);
 	else if(strcmp(input,"recurse")==0) doRecurse(strToInt(args));
 	else if(strcmp(input,"command")==0){//Command hace una llamada recursiva a la función para repetir la ejecución de un comando del historico(Comando de p0, debe estar aquí para poder llamar a funciones anteriores)
 		(*control)++; //Aumentamos el contador de llamadas recursivas
@@ -56,7 +57,7 @@ void inputHandler(char * input, bool * onRunTime, tList* listaComandos, tList* l
 					args = getData(*listaComandos, pos); //Reutilizamos args para guardar el comando a repetir
 					strcpy(input, args); //Copiamos args a input
 					printf("Ejecutando: %s\n", input); //Mostramos un mensaje de confirmacion
-					inputHandler(input, onRunTime, listaComandos, listaFicheros, control); //Llamada recursiva
+					inputHandler(input, onRunTime, listaComandos, listaFicheros, memory, control); //Llamada recursiva
 				}
 			}
 		}
@@ -72,10 +73,11 @@ void inputHandler(char * input, bool * onRunTime, tList* listaComandos, tList* l
 int main(){
 	tList listaComandos; //Lista para el historial de comandos
 	tList listaFicheros; //Lista para los ficheros abiertos
-	tList mapedMemory; //Lista para la memoria mapeada
+	tList memory; //Lista para la memoria mapeada
 	int control; //variable para controlar la recursion
 	createEmptyList(&listaComandos); //Inicialización lista
 	createEmptyList(&listaFicheros); //Inicialización lista
+	createEmptyList(&memory); //Inicialización lista
 	insertFile(&listaFicheros,"entrada estandar", 0, fcntl(0, F_GETFL)); //Añadimos a la lista los archivos abiertos heredados
 	insertFile(&listaFicheros,"salida estandar", 1, fcntl(1, F_GETFL)); //Añadimos a la lista los archivos abiertos heredados
 	insertFile(&listaFicheros,"error estandar", 2, fcntl(2, F_GETFL)); //Añadimos a la lista los archivos abiertos heredados
@@ -89,11 +91,12 @@ int main(){
 		if(input != NULL){
 			control = 0;
 			insertCMD(&listaComandos, input);//Añadimos comando al historico
-			inputHandler(input, &onRunTime, &listaComandos, &listaFicheros, &control);//Procesar entrada
+			inputHandler(input, &onRunTime, &listaComandos, &listaFicheros, &memory, &control);//Procesar entrada
 		}
 	}
 	//Borrado de las listas
 	deleteListCMD(&listaComandos);
 	deleteListFile(&listaFicheros);
+	deleteMemList(&memory);
 	return 0;
 }

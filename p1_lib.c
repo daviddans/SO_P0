@@ -100,7 +100,7 @@ void showStat(char* args, char** args_ptr){
                 else if(l){
                     if(acc) time = status.st_atime; //Usamos fecha de acceso
                     else time = status.st_mtime; //Usamos fecha de modificacion
-                    calendar = localtime(&time); //Creamos un calendario con la hora del sistema
+                    calendar = localtime(&time); //Creamos un calendario con time
                     strftime(timeStr,30,"%d/%m/%Y-%X",calendar); //Creamos un string con el formato deseado
                     if(link && LetraTF(status.st_mode)=='l') { //Si se introduce el parametro -link y es enlace simbolico, construimos un string con el link y el path apuntado
                         strcpy(name,getNombre(args));

@@ -50,6 +50,22 @@ void help(char *args){
     else if(strcmp(args,"delete")== 0) puts("delete borra los archivos o carpetas vacias especificados\n \n");
     //Ayuda sobre el comando deltree
     else if(strcmp(args,"deltree")== 0) puts("delrtee borra recursivamente todo archivo y directoro contenido en las rutas dadas y sus subrutas\n   Usar con discrección la informacion borrada accidentalmente podria no ser recuperada");
+    //Ayuda sobre malloc
+    else if(strcmp(args,"malloc")== 0) puts("PlaceHolder(WIP)\n");
+    //Ayuda sobre shared
+    else if(strcmp(args,"shared")== 0) puts("PlaceHolder(WIP)\n");
+    //Ayuda sobre mmap
+    else if(strcmp(args,"mmap")== 0) puts("PlaceHolder(WIP)\n");
+    //Ayuda sobre read
+    else if(strcmp(args,"read")== 0) puts("PlaceHolder(WIP)\n");
+    //Ayuda sobre write
+    else if(strcmp(args,"write")== 0) puts("PlaceHolder(WIP)\n");
+    //Ayuda sobre memdump
+    else if(strcmp(args,"memdump")== 0) puts("PlaceHolder(WIP)\n");
+    //Ayuda sobre memfill
+    else if(strcmp(args,"memfill")== 0) puts("PlaceHolder(WIP)\n");
+    //Ayuda sobre mem
+    else if(strcmp(args,"mem")== 0) puts("PlaceHolder(WIP)\n");
     //Ayuda sobre el comando recurse
     else if(strcmp(args,"recurse")== 0) puts("recurse n Invoca a la funcion recursiva n veces\n");
     //Si se introduce un comando no reconocido se mostrara un mensaje de error

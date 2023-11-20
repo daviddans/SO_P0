@@ -4,7 +4,7 @@
 
 #define TAMANO 2048
 
-void doMalloc(); //reserva o libera un bloque malloc de memoria
+void doMalloc(char* args, char** args_ptr, tList* memory); //reserva o libera un bloque malloc de memoria
 void doShared(); //reserva o libera un bloque shared de memoria
 void doMmap(); //mapea o desmapea un fichero en memoria
 void doRead(); //lee un fichero en memoria
@@ -13,3 +13,6 @@ void doMemdump(); //vuelca los contenidos de una dirección de memoria en la pan
 void doMemfill(); //llena la memoria con un caracter
 void doMem(); //muestra información de la memoria de los procesos
 void doRecurse(int n); //ejecuta una funcion recursiva
+
+void printMemBlocks(tList lista); //Mostrar bloques de memoria de una lista
+void printMemBlocksType(tList lista, Type tipo); //Mostrar bloques de memoria de una lista (Filtrando por tipo)
