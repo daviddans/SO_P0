@@ -65,34 +65,79 @@ void doRecurse(int n)
 
 void doMalloc(char* args, char** args_ptr, tList* memory){ //Reserva bloques de memoria
     int pid = getpid();
-    size_t tam;
-    void* memPtr;
-    tPos memPos;
-    tMemBlock* memBlock;
+    size_t tam = 0;
+    void* memPtr = NULL;
+    tPos memPos = NULL;
+    tMemBlock* memBlock = NULL;
     time_t allocTime;
     if(args == NULL){
         printf("******Lista de bloques asignados malloc para el proceso %d\n",pid);
         printMemBlocksType(*memory, mal); //Sin argumentos imprimimos reservas de malloc hechas
     }
     else if(strcmp(args,"-free") == 0){
-        strtok_r(args," \n\t", args_ptr);
-        tam = atoi(args);
-        memPos = searchBySiceAndType(*memory,tam,mal); //Buscamos Coincidendicas
-        if(memPos == NULL) printf("Error: en malloc -free\n"); //Control errores
+        args = strtok_r(NULL," \n\t", args_ptr);
+        if(args !=NULL) tam = atoi(args);
+        if(tam > 0)memPos = searchBySiceAndType(*memory,tam,mal); //Buscamos Coincidendicas
+        if(memPos == NULL) printf("Error: en malloc -free, no se encuentran bloques de %lu bytes\n", tam); //Control errores
         else{ 
-            memBlock = getData(*memory,memPos);
+            memBlock = (tMemBlock*)getData(*memory,memPos);
             free(memBlock->addres); //Liberamos memoria
+            printf("freed addres : %p\n", memBlock->addres);
             deleteMemBlockIn(memory, memPos); //Borramos de la lista
         }
     }
     else{
         tam = atoi(args);
-        memPtr = malloc(tam); //Reservamos memoria
-        if(memPtr == NULL) perror("Error: en malloc\n"); //Control errores
+        if(tam == 0) printf("No se pueden reservar bloque de 0 bytes\n");
         else{
-            time(&allocTime);
-            insertMemBlock(memory,newMemBlock(memPtr,tam,allocTime,mal,0,NULL,0)); //Añadimos entrada en la lista de memoria
-            printf("Asignados %lu bytes en %p\n",tam,memPtr);
+            memPtr = malloc(tam); //Reservamos memoria
+            if(memPtr == NULL) perror("Error: en malloc\n"); //Control errores
+            else{
+                time(&allocTime);
+                tMemBlock* myNewMemBlock = newMemBlock(memPtr,tam,allocTime,mal,0,NULL,0);
+                insertMemBlock(memory,myNewMemBlock);
+                printf("Asignados %lu bytes en %p\n",tam,memPtr);
+            }
         }
+    }
+}
+
+void LlenarMemoria (void *p, size_t cont, unsigned char byte)
+{
+  unsigned char *arr=(unsigned char *) p;
+  size_t i;
+
+  for (i=0; i<cont;i++)
+		arr[i]=byte;
+}
+
+void doMemfill(char* args, char** args_ptr){
+    void* addr;
+    size_t nBytes;
+    unsigned char byte;
+    if(args != NULL){
+        addr = (void*)strtol(args,NULL,16);
+        args = strtok_r(NULL," \n\t",args_ptr);
+        nBytes = strToInt(args);
+        args = strtok_r(NULL," \n\t",args_ptr);
+        byte = strToInt(args);
+        printf("Llenando %lu bytes de memoria con el byte (%.2X) a partir de la direccion %p\n",nBytes,byte,addr);
+        LlenarMemoria(addr, nBytes, byte);
+    }
+}
+
+void doMemdump(char* args, char** args_ptr){
+    unsigned char* addr;
+    size_t nBytes;
+    if(args != NULL){
+        addr = (unsigned char*)strtol(args,NULL,16);
+        args = strtok_r(NULL," \n\t",args_ptr);
+        nBytes = strToInt(args);
+        args = strtok_r(NULL," \n\t",args_ptr);
+        printf("Volcando %lu bytes de memoria desde la direccion %p\n",nBytes,addr);
+        for (size_t i = 0; i<nBytes; i++){
+            printf(" %.2X ", addr[i]);
+        }
+        printf(":END:\n");
     }
 }

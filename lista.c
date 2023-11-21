@@ -222,6 +222,9 @@ tMemBlock* newMemBlock(void* addres, size_t size, time_t allocTime, Type tipo, _
         p->size = size; //Guardamos tamañ0
         time(&(p->allocTime)); //Guardamos hora
         p->tipo = tipo; //Guardamos tipo
+        p->key = -1;
+        p->filename = NULL;
+        p->fd = -1;
         if(tipo == shm) p->key = key; //Guardamos clave de shm
         if(tipo == map) {
             p->filename = malloc(sizeof(char)*(strlen(name)+1));
@@ -236,16 +239,19 @@ tMemBlock* newMemBlock(void* addres, size_t size, time_t allocTime, Type tipo, _
 bool insertMemBlock(tList* lista, tMemBlock* memblock){ //Añade un bloque de memoria previamente creado a la lista
     bool r; //Bool para guardar el retorno
     tPos pos;
-    if(memblock == NULL || (pos = malloc(sizeof(tPos)))==NULL) r = false; //Comprobamos que la reserva de memoria sea correcta
+    if(memblock == NULL) printf("No se puede añadir bloques de memoria nulos");
     else{
-        pos->data = memblock; //Guardamos los datos
-        pos->next = NULL;
-        if(isEmptyList(*lista)) *lista = pos; //Si la lista es vacia insertamos como unico elemento
-        else{//Si no insertamos al principio (mayor eficiencia)
-            pos->next = *lista;
-            *lista = pos;
+        if((pos = malloc(sizeof(struct node)))==NULL) r = false; //Comprobamos que la reserva de memoria sea correcta
+        else{
+            pos->data = memblock; //Guardamos los datos
+            pos->next = NULL;
+            if(isEmptyList(*lista)) *lista = pos; //Si la lista es vacia insertamos como unico elemento
+            else{//Si no insertamos al principio (mayor eficiencia)
+                pos->next = *lista;
+                *lista = pos;
+            }
+            r = true;
         }
-        r = true;
     }
     return r;
 }   
@@ -309,7 +315,7 @@ tPos searchBySiceAndType(tList lista, size_t tam, Type tipo){ //Devuelve la posi
         memBlock = i->data;
         while(i != NULL && !(memBlock->size == tam && memBlock->tipo == tipo)){ // recorremos la lista
             i = i->next;
-            if(i !=NULL) memBlock = i->data;
+            if(i!=NULL)memBlock = i->data;
         }
         if(memBlock->size == tam && memBlock->tipo == tipo){ // Si encontramos el elemento devolvemos su puntero
             return i; 
