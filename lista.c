@@ -308,6 +308,19 @@ void deleteMemList(tList* lista){ //Elimina lista de memblocks
     }
 }
 
+void freeAllMemoryList(tList* lista){ //Funcion que vacia correctamente una lista de memoria antes de salir del programa
+    tPos i = NULL;
+    tMemBlock* memBlock;
+    while((*lista) !=NULL){
+        i = (*lista);
+        (*lista) = (*lista)->next;
+        memBlock = i->data;
+        free(memBlock->addres);
+        freeMemblock(memBlock);
+        free(i);
+    }
+}
+
 tPos searchBySiceAndType(tList lista, size_t tam, Type tipo){ //Devuelve la posicion de la primera coincidencia
     tPos i = lista;
     tMemBlock * memBlock = NULL;
@@ -318,6 +331,22 @@ tPos searchBySiceAndType(tList lista, size_t tam, Type tipo){ //Devuelve la posi
             if(i!=NULL)memBlock = i->data;
         }
         if(memBlock->size == tam && memBlock->tipo == tipo){ // Si encontramos el elemento devolvemos su puntero
+            return i; 
+        }
+    }
+    return NULL; //Si no encontramos el elemento devolvemos NULL
+}
+
+tPos searchByKey(tList lista, key_t key){ //Devuelve la posicion de la primera coincidencia
+    tPos i = lista;
+    tMemBlock * memBlock = NULL;
+    if(!isEmptyList(lista)){ // comprobamos que la lista no este vacia
+        memBlock = i->data;
+        while(i != NULL && !(memBlock->tipo == shm && memBlock->key == key)){ // recorremos la lista
+            i = i->next;
+            if(i!=NULL)memBlock = i->data;
+        }
+        if(memBlock->tipo == shm && memBlock->key == key){ // Si encontramos el elemento devolvemos su puntero
             return i; 
         }
     }

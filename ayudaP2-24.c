@@ -16,14 +16,7 @@ void Recursiva (int n)
 }
 
 
-void LlenarMemoria (void *p, size_t cont, unsigned char byte)
-{
-  unsigned char *arr=(unsigned char *) p;
-  size_t i;
 
-  for (i=0; i<cont;i++)
-		arr[i]=byte;
-}
 
 void * ObtenerMemoriaShmget (key_t clave, size_t tam)
 {
@@ -44,6 +37,7 @@ void * ObtenerMemoriaShmget (key_t clave, size_t tam)
         errno=aux;
         return (NULL);
     }
+    
     shmctl (id,IPC_STAT,&s);
  /** Guardar en la lista, p.e.  InsertarNodoShared (&L, p, s.shm_segsz, clave); */
     return (p);

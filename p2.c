@@ -38,6 +38,7 @@ void inputHandler(char * input, bool * onRunTime, tList* listaComandos, tList* l
 	else if(strcmp(input,"delete")==0) delete(args);
 	else if(strcmp(input,"deltree")==0) deltree(args, &args_ptr);
 	else if(strcmp(input,"malloc")==0) doMalloc(args, &args_ptr, memory);
+	else if(strcmp(input,"shared")==0) doShared(args, &args_ptr, memory);
 	else if(strcmp(input,"memdump")==0) doMemdump(args, &args_ptr);
 	else if(strcmp(input,"memfill")==0) doMemfill(args, &args_ptr);
 	else if(strcmp(input,"recurse")==0) doRecurse(strToInt(args));
@@ -68,19 +69,6 @@ void inputHandler(char * input, bool * onRunTime, tList* listaComandos, tList* l
 	else if(strcmp(input,"\n")!=0) printf("Comando no reconocido. Usa help para obtener una lista de comandos\n");//Si hay un comando no reconocido se imprime un error
 
 }
-
-void freeAllMemoryList(tList* memoryList){ //Funcion que vacia correctamente una lista de memoria antes de salir del programa
-	tPos i = first(*memoryList);
-	tMemBlock* memBlock; 
-	while (i != NULL)
-	{
-		memBlock = (tMemBlock*)getData(*memoryList, i);
-		free(memBlock->addres);
-		deleteMemBlockIn(memoryList, i);
-		i = i->next;
-	}
-}
-
 
 //Funcion Main 
 int main(){

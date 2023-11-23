@@ -76,7 +76,7 @@ void doMalloc(char* args, char** args_ptr, tList* memory){ //Reserva bloques de 
     }
     else if(strcmp(args,"-free") == 0){
         args = strtok_r(NULL," \n\t", args_ptr);
-        if(args !=NULL) tam = atoi(args);
+        if(args !=NULL) tam = strtoul(args,NULL,10);
         if(tam > 0)memPos = searchBySiceAndType(*memory,tam,mal); //Buscamos Coincidendicas
         if(memPos == NULL) printf("Error: en malloc -free, no se encuentran bloques de %lu bytes\n", tam); //Control errores
         else{ 
@@ -87,7 +87,7 @@ void doMalloc(char* args, char** args_ptr, tList* memory){ //Reserva bloques de 
         }
     }
     else{
-        tam = atoi(args);
+        tam = strtoul(args,NULL,10);
         if(tam == 0) printf("No se pueden reservar bloque de 0 bytes\n");
         else{
             memPtr = malloc(tam); //Reservamos memoria
@@ -100,6 +100,81 @@ void doMalloc(char* args, char** args_ptr, tList* memory){ //Reserva bloques de 
             }
         }
     }
+}
+void * ObtenerMemoriaShmget (key_t clave, size_t tam)
+{
+    void * p;
+    int aux,id,flags=0777;
+    struct shmid_ds s;
+
+    if (tam!=0)     /*tam distito de 0 indica crear */
+        flags=flags | IPC_CREAT | IPC_EXCL;
+    if (clave==IPC_PRIVATE)  /*no nos vale*/
+        {errno=EINVAL; return NULL;}
+    if ((id=shmget(clave, tam, flags))==-1)
+        return (NULL);
+    if ((p=shmat(id,NULL,0))==(void*) -1){
+        aux=errno;
+        if (tam)
+             shmctl(id,IPC_RMID,NULL);
+        errno=aux;
+        return (NULL);
+    }
+    shmctl (id,IPC_STAT,&s);
+    return (p);
+}
+
+void doShared(char* args, char** args_ptr, tList* memory){ //reserva o libera un bloque shared de memoria
+    int pid = getpid();
+    size_t tam = 0;
+    key_t key  = 0; 
+    void* memPtr = NULL;
+    tPos memPos = NULL;
+    tMemBlock* memBlock = NULL;
+    time_t allocTime;
+    if(args == NULL){
+        printf("******Lista de bloques asignados shared para el proceso %d\n",pid);
+        printMemBlocksType(*memory, shm); //Sin argumentos imprimimos reservas de shared hechas
+    }
+    else if(strcmp(args,"-free") == 0){
+        //Do something
+    }
+    else if(strcmp(args,"-delkey") == 0){
+        //Do something
+    }
+    else if(strcmp(args,"-create") == 0){
+        args = strtok_r(NULL," \n\t", args_ptr);
+        key=(key_t)  strtoul(args,NULL,10);
+        args = strtok_r(NULL," \n\t", args_ptr);
+        tam=(size_t) strtoul(args,NULL,10);
+        if (tam==0) {
+	        printf ("No se asignan bloques de 0 bytes\n");
+        }
+        else if ((memPtr=ObtenerMemoriaShmget(key,tam))!=NULL){
+            time(&allocTime);
+            tMemBlock* myNewMemBlock = newMemBlock(memPtr,tam,allocTime,shm,key,NULL,0);
+            insertMemBlock(memory,myNewMemBlock);
+	        printf ("Asignados %lu bytes en %p\n",(unsigned long) tam, memPtr);
+
+        }
+        else{
+	        printf ("Imposible asignar memoria compartida clave %lu:%s\n",(unsigned long) key,strerror(errno));
+         }
+    }
+    else{
+        key = strtoul(args,NULL,10);
+        if(key == 0) printf("Error en shared: invalid argument\n");
+        else{
+            memPos = searchByKey(*memory,key);
+            if(memPos == NULL) printf("No se encotro la clave %d\n",key);
+            else{
+                memBlock = (tMemBlock*)memPos->data;
+                if(shmget(memBlock->key, memBlock->size,0) == -1) perror("Error en shared: ");
+                else printf("Memoria compartida de clave %d  en %p\n",memBlock->key,memBlock->addres);
+            }
+        }
+    }
+
 }
 
 void LlenarMemoria (void *p, size_t cont, unsigned char byte)
@@ -116,7 +191,7 @@ void doMemfill(char* args, char** args_ptr){
     size_t nBytes;
     unsigned char byte;
     if(args != NULL){
-        addr = (void*)strtol(args,NULL,16);
+        addr = (void*)strtoul(args,NULL,16);
         args = strtok_r(NULL," \n\t",args_ptr);
         nBytes = strToInt(args);
         args = strtok_r(NULL," \n\t",args_ptr);
@@ -132,7 +207,7 @@ void doMemdump(char* args, char** args_ptr){
     if(args != NULL){
         addr = (unsigned char*)strtol(args,NULL,16);
         args = strtok_r(NULL," \n\t",args_ptr);
-        nBytes = strToInt(args);
+        nBytes = strtoul(args,NULL,10);
         args = strtok_r(NULL," \n\t",args_ptr);
         printf("Volcando %lu bytes de memoria desde la direccion %p\n",nBytes,addr);
         for (size_t i = 0; i<nBytes; i++){

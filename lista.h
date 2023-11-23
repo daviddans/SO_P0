@@ -14,7 +14,8 @@
 #include <sys/types.h>
 #include <grp.h>
 #include <dirent.h>
-
+#include <sys/shm.h>
+#include <errno.h>
 
 //Definicion de tipos
 typedef char* cmd; //Definimos un tipo para los comandos
@@ -29,7 +30,7 @@ typedef struct memBlock{
     size_t size;
     time_t allocTime;
     Type tipo;
-    __key_t key;
+    key_t key;
     char* filename;
     int fd;
 }tMemBlock;
@@ -63,4 +64,6 @@ bool insertMemBlock(tList* lista, tMemBlock *memblock); //Añade la entrada de u
 void deleteMemBlockIn(tList* lista, tPos p); //Libera correctamente el objeto de la posicion p
 tPos findKey(tList lista, __key_t key); //Devuelve la posicion del primer elemento con key = key
 tPos searchBySiceAndType(tList lista, size_t tam, Type tipo); //Devuelve la posicion de la primera coincidencia
+tPos searchByKey(tList lista, key_t key); //Devuelve la posicion de la primera coincidencia
 void deleteMemList(tList* lista); //Elimina una lista de memblocks liberando la memoria dinamica correctamente
+void freeAllMemoryList(tList* lista); //Igual que deletememlist, pero liberando p->data->addres tambien
