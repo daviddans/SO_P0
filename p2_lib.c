@@ -227,6 +227,41 @@ void doMmap(char* args, char** args_ptr, tList* memory){ //mapea o desmapea un f
     }
 }
 
+ssize_t LeerFichero (char *f, void *p, size_t cont)
+{
+   struct stat s;
+   ssize_t  n;  
+   int df,aux;
+   if (stat (f,&s)==-1 || (df=open(f,O_RDONLY))==-1)
+	return -1;     
+   if (cont==-1)   /* si pasamos -1 como bytes a leer lo leemos entero*/
+	cont=s.st_size;
+   if ((n=read(df,p,cont))==-1){
+	aux=errno;
+	close(df);
+	errno=aux;
+	return -1;
+   }
+   close (df);
+   return n;
+}
+
+void doRead(char* args, char** args_ptr) //lee un fichero en memoria
+{
+    void* addr;
+    size_t nBytes;
+    char fichero[Max_len_dir];
+    if (args == NULL) printf("Error en read: faltan parametros\n");
+    else{
+        strcpy(fichero,args);
+        args = strtok_r(NULL," \n\t", args_ptr);
+        addr = (void*)strtoul(args,NULL,16);
+        args = strtok_r(NULL," \n\t", args_ptr);
+        nBytes = strtol(args,NULL,10);
+        LeerFichero(fichero,addr,nBytes);
+    }
+}
+
 void LlenarMemoria (void *p, size_t cont, unsigned char byte)
 {
   unsigned char *arr=(unsigned char *) p;
@@ -261,8 +296,12 @@ void doMemdump(char* args, char** args_ptr){
         args = strtok_r(NULL," \n\t",args_ptr);
         printf("Volcando %lu bytes de memoria desde la direccion %p\n",nBytes,addr);
         for (size_t i = 0; i<nBytes; i++){
+            printf(" %c ", addr[i]);
+        }
+        printf("\n");
+        for (size_t i = 0; i<nBytes; i++){
             printf(" %.2X ", addr[i]);
         }
-        printf(":END:\n");
+        printf("\n");
     }
 }

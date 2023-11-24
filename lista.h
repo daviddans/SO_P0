@@ -17,6 +17,7 @@
 #include <sys/shm.h>
 #include <errno.h>
 #include <sys/mman.h>
+#include <sys/types.h>
 
 
 //Definicion de tipos
