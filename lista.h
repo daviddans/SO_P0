@@ -66,4 +66,4 @@ tPos findKey(tList lista, __key_t key); //Devuelve la posicion del primer elemen
 tPos searchBySiceAndType(tList lista, size_t tam, Type tipo); //Devuelve la posicion de la primera coincidencia
 tPos searchByKey(tList lista, key_t key); //Devuelve la posicion de la primera coincidencia
 void deleteMemList(tList* lista); //Elimina una lista de memblocks liberando la memoria dinamica correctamente
-void freeAllMemoryList(tList* lista); //Igual que deletememlist, pero liberando p->data->addres tambien
+// void freeAllMemoryList(tList* lista); //Igual que deletememlist, pero liberando p->data->addres tambien (Funcinamiento no correcto)

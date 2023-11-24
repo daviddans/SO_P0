@@ -98,6 +98,6 @@ int main(){
 	//Borrado de las listas
 	deleteListCMD(&listaComandos);
 	deleteListFile(&listaFicheros);
-	freeAllMemoryList(&memory);
+	//freeAllMemoryList(&memory); (No funciona, la shell de referencia no lo hace asi que se abandona la implementacion)
 	return 0;
 }
