@@ -1,6 +1,5 @@
 #include "p2_lib.h"
-
-
+#define MAX_FILE_LEN 1000
 void memTypeToStr(Type tipo, char buff[8]){ //Funcion auxiliar para convertir enumType en str
 
     switch (tipo)
@@ -94,8 +93,7 @@ void doMalloc(char* args, char** args_ptr, tList* memory){ //Reserva bloques de 
             if(memPtr == NULL) perror("Error: en malloc\n"); //Control errores
             else{
                 time(&allocTime);
-                tMemBlock* myNewMemBlock = newMemBlock(memPtr,tam,allocTime,mal,0,NULL,0);
-                insertMemBlock(memory,myNewMemBlock);
+                insertMemBlock(memory,newMemBlock(memPtr,tam,allocTime,mal,0,NULL,0));
                 printf("Asignados %lu bytes en %p\n",tam,memPtr);
             }
         }
@@ -184,6 +182,47 @@ void doShared(char* args, char** args_ptr, tList* memory){ //reserva o libera un
                     printf("Memoria compartida de clave %d  en %p\n",key,memPtr);
                 }
             }
+        }
+    }
+}
+
+void doMmap(char* args, char** args_ptr, tList* memory){ //mapea o desmapea un fichero en memoria
+    int pid = getpid();
+    size_t tam = 0;
+    void* memPtr = NULL;
+    tPos memPos = NULL;
+    tMemBlock* memBlock = NULL;
+    time_t allocTime;
+    struct stat s;
+    int fd, protection=0, map=MAP_PRIVATE,modo=O_RDONLY;
+    char fichero[Max_len_dir];
+    if(args == NULL){
+        printf("******Lista de bloques asignados mmap para el proceso %d\n",pid);
+        printMemBlocksType(*memory, map); //Sin argumentos imprimimos reservas de mmap hechas
+    }
+    else if(strcmp(args,"-free") == 0){
+        args = strtok_r(NULL," \n\t", args_ptr);
+        strcpy(fichero,args);
+        memPos = searchByFile(*memory, fichero); //Buscamos Coincidendicas
+        if(memPos == NULL) printf("Error: en mmap -free, Fichero %s no mapeado\n", fichero); //Control errores
+        else{ 
+            memBlock = (tMemBlock*)getData(*memory,memPos);
+            close(memBlock->fd); //Cerramos fichero
+            printf("freed addres : %p\n", memBlock->addres);
+            deleteMemBlockIn(memory, memPos); //Borramos de la lista
+        }
+    }
+    else{
+        strcpy(fichero, args);
+        args = strtok_r(NULL," \n\t", args_ptr);
+        if(args != NULL)protection = strtoul(args,NULL,8);
+        if (protection&PROT_WRITE) modo=O_RDWR;
+        else if (stat(fichero,&s)==-1 || (fd=open(fichero, modo))==-1) perror("Error en mmap:");
+        else if ((memPtr=mmap(NULL,s.st_size, protection,map,fd,0))==MAP_FAILED) perror("Error en mmap:");
+        else{
+            allocTime = s.st_atime;
+            tam = s.st_size;
+            insertMemBlock(memory,newMemBlock(memPtr,tam,allocTime,map,0,fichero,fd));
         }
     }
 }

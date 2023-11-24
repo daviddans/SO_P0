@@ -1,6 +1,6 @@
 //Codigo de la lista
 #include "lista.h"
-#define MAX_CMD 1000 //Tamaño maximo de un comando a guardar
+
 void createEmptyList(tList* lista){
     (*lista) = NULL;
 }
@@ -347,6 +347,22 @@ tPos searchByKey(tList lista, key_t key){ //Devuelve la posicion de la primera c
             if(i!=NULL)memBlock = i->data;
         }
         if(memBlock->tipo == shm && memBlock->key == key){ // Si encontramos el elemento devolvemos su puntero
+            return i; 
+        }
+    }
+    return NULL; //Si no encontramos el elemento devolvemos NULL
+}
+
+tPos searchByFile(tList lista, char* file){ //Devuelve la posicion de la primera coincidencia
+    tPos i = lista;
+    tMemBlock * memBlock = NULL;
+    if(!isEmptyList(lista)){ // comprobamos que la lista no este vacia
+        memBlock = i->data;
+        while(i != NULL && !(memBlock->tipo == map && strcmp(memBlock->filename,file)==0)){ // recorremos la lista
+            i = i->next;
+            if(i!=NULL)memBlock = i->data;
+        }
+        if((memBlock->tipo == map && strcmp(memBlock->filename,file)==0)){ // Si encontramos el elemento devolvemos su puntero
             return i; 
         }
     }

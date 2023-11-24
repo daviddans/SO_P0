@@ -6,7 +6,7 @@
 
 void doMalloc(char* args, char** args_ptr, tList* memory); //reserva o libera un bloque malloc de memoria
 void doShared(char* args, char** args_ptr, tList* memory); //reserva o libera un bloque shared de memoria
-void doMmap(); //mapea o desmapea un fichero en memoria
+void doMmap(char* args, char** args_ptr, tList* memory); //mapea o desmapea un fichero en memoria
 void doRead(); //lee un fichero en memoria
 void doWrite(); //escribe en un fichero los contenidos de una dirección de memoria
 void doMemdump(char* args, char** args_ptr); //vuelca los contenidos de una dirección de memoria en la pantalla

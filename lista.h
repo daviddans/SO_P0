@@ -16,6 +16,8 @@
 #include <dirent.h>
 #include <sys/shm.h>
 #include <errno.h>
+#include <sys/mman.h>
+
 
 //Definicion de tipos
 typedef char* cmd; //Definimos un tipo para los comandos
@@ -65,5 +67,6 @@ void deleteMemBlockIn(tList* lista, tPos p); //Libera correctamente el objeto de
 tPos findKey(tList lista, __key_t key); //Devuelve la posicion del primer elemento con key = key
 tPos searchBySiceAndType(tList lista, size_t tam, Type tipo); //Devuelve la posicion de la primera coincidencia
 tPos searchByKey(tList lista, key_t key); //Devuelve la posicion de la primera coincidencia
+tPos searchByFile(tList lista, char* file); //Devuelve la posicion de la primera coincidencia
 void deleteMemList(tList* lista); //Elimina una lista de memblocks liberando la memoria dinamica correctamente
 // void freeAllMemoryList(tList* lista); //Igual que deletememlist, pero liberando p->data->addres tambien (Funcinamiento no correcto)

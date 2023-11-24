@@ -39,6 +39,7 @@ void inputHandler(char * input, bool * onRunTime, tList* listaComandos, tList* l
 	else if(strcmp(input,"deltree")==0) deltree(args, &args_ptr);
 	else if(strcmp(input,"malloc")==0) doMalloc(args, &args_ptr, memory);
 	else if(strcmp(input,"shared")==0) doShared(args, &args_ptr, memory);
+	else if(strcmp(input,"mmap")==0) doMmap(args, &args_ptr, memory);
 	else if(strcmp(input,"memdump")==0) doMemdump(args, &args_ptr);
 	else if(strcmp(input,"memfill")==0) doMemfill(args, &args_ptr);
 	else if(strcmp(input,"recurse")==0) doRecurse(strToInt(args));
