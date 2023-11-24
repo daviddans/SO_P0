@@ -1,10 +1,10 @@
 #include "p1_lib.h"
-void create(char *args){ //Crear archivos o directorios
+void create(char *args, char** args_ptr){ //Crear archivos o directorios
     int fd;
     if(args == NULL) changeDir(args); //Sin argumentos imprimimos directorio actual
     else {
         if(strcmp(args,"-f") == 0){ //Comprobamos si imprimimos un archivo o directorio
-            args = strtok(NULL," \n\t");
+            args = strtok_r(NULL," \n\t", args_ptr);
             if((fd = creat(args,0777))==-1) perror("\nError en create: "); //Tratamos de crear el archivo
             else close(fd);  //Si logramos crear el archivo borramos su file descriptors
         }else if(mkdir(args,0777)==-1) perror("\nError en create: "); //Tratamos de crear el directorio
@@ -63,7 +63,7 @@ char* getGroup(gid_t gid){ //Funcion auxiliar para obtener el nombre de grupo a 
     return grp->gr_name;
 }
 
-char* getNombre(char *path) {
+char* getNombre(char *path){ //Funcion auxiliar paara obtener el nombre de un archivo/directorio dada su ruta
     char *token = strtok(path,"/"); // Divide la ruta en partes usando '/'
     char *nombre = NULL;
     while (token != NULL) {
@@ -73,7 +73,7 @@ char* getNombre(char *path) {
     return nombre;
 }
 
-void showStat(char* args){
+void showStat(char* args, char** args_ptr){
     struct stat status;
     time_t time;
     struct tm* calendar;
@@ -100,7 +100,7 @@ void showStat(char* args){
                 else if(l){
                     if(acc) time = status.st_atime; //Usamos fecha de acceso
                     else time = status.st_mtime; //Usamos fecha de modificacion
-                    calendar = localtime(&time); //Creamos un calendario con la hora del sistema
+                    calendar = localtime(&time); //Creamos un calendario con time
                     strftime(timeStr,30,"%d/%m/%Y-%X",calendar); //Creamos un string con el formato deseado
                     if(link && LetraTF(status.st_mode)=='l') { //Si se introduce el parametro -link y es enlace simbolico, construimos un string con el link y el path apuntado
                         strcpy(name,getNombre(args));
@@ -108,7 +108,7 @@ void showStat(char* args){
                         if((pathnameLen=readlink(args,pathname,500)) == -1) perror("Error en enlace simbolico:"); //Llamada al sistema para leer el enlace simbolico y control de errores
                         pathname[pathnameLen] = '\0';
                         strcat(name,pathname);
-                    } else strcpy(name,args); //Mostramos unicamete el path introducido
+                    } else strcpy(name,getNombre(args)); //Mostramos unicamete el path introducido
                     permisos = ConvierteModo(status.st_mode);
                     printf("\t%s\t%ld (%ld)\t%s\t%s\t%s\t%ld\t%s\n",timeStr,status.st_nlink,status.st_ino,getUser(status.st_uid),getGroup(status.st_gid),permisos,status.st_size,name);//Mostramos la informacion en formato largo
                     free(permisos);//Liberamos memoria reservada
@@ -117,14 +117,15 @@ void showStat(char* args){
                     printf("\t%ld\t%s\n",status.st_size,getNombre(args)); //Mostramos la informacion en formato corto
                 }
             }
-            args = strtok(NULL," \n\t"); 
+            args = strtok_r(NULL," \n\t",args_ptr); 
         }
     }
 }
 
-void list(char* args){ //Listar ficheros
+void list(char* args, char** args_ptr){ //Listar ficheros
     char mode[20]; //Copiamos parametros de stats
-    char buff[1000]; //Buffer para crear argumentos para stat
+    char buff[1000]; //Buffer para crear argumentos
+    char* buff_ptr; //Puntero para trocear buff
     char* rPath = NULL; //String para direccion absoluta
     DIR* directory = NULL; //Puntero para guardar las direcciones
     struct dirent* file; //Struct para cada fichero de las direcciones
@@ -143,11 +144,11 @@ void list(char* args){ //Listar ficheros
                 else if(strcmp(args,"-long") == 0){
                 strcat(mode,args); 
                 strcat(mode," ");
-                } 
+                }
                 else if(strcmp(args,"-acc") == 0){
                 strcat(mode,args); 
                 strcat(mode," ");
-                } 
+                }
                 else if(strcmp(args,"-link") == 0){
                 strcat(mode,args); 
                 strcat(mode," ");
@@ -158,8 +159,10 @@ void list(char* args){ //Listar ficheros
             {
                 if((directory = opendir(args)) == NULL) perror("Error en list:");
                 else{
+
                     if(recb){ //Recursividad antes
                         while ((file = readdir(directory)) != NULL){
+                            if(strcmp(file->d_name,".")== 0 || strcmp(file->d_name,"..")== 0) continue; //Ingoramos .(este directorio) y ..(directorio padre)
                             if(file->d_name[0] == '.' && !hid) continue; //Saltar elementos ocultos salvo -hid
                             if(file->d_type == 4){ //Mirar subcarpetas recursivamente antes
                                 buff[0] = '\0'; //Obtencion de ruta absoluta
@@ -173,12 +176,14 @@ void list(char* args){ //Listar ficheros
                                     strcat(buff,"-recb "); //Añadimos -recb
                                     if(hid) strcat(buff,"-hid "); //Comprobamos si añadir -hid
                                     strcat(buff,rPath); //Añadimos ruta absoluta
-                                    strtok(buff," \n\t"); //Troceamos la entrada
-                                    list(buff); //Llamada recursiva a list
+                                    if(rPath != NULL) free(rPath);
+                                    strcat(buff,"\0");//Añadimos final de string
+                                    list(strtok_r(buff," \n\t", &buff_ptr), &buff_ptr); //Llamada recursiva a list
                                 }
                             }
                         }
                     }
+                    if(closedir(directory) == 0) directory = NULL;//Liberamos memorida reservada por opendir
                     directory = opendir(args);
                     printf("************ %s ************\n",args); //Imprimir nombre de la carpeta
                     while ((file = readdir(directory)) != NULL){
@@ -192,13 +197,17 @@ void list(char* args){ //Listar ficheros
                             buff[0] = '\0'; //Construccion de argumentos para stat
                             strcpy(buff,mode); //Añadimos argumentos de stat
                             strcat(buff,rPath); //Añadimos ruta absoluta
-                            strtok(buff," \n\t"); //Troceamos la entrada
-                            showStat(buff); //Llamada al comando stat
+                            if(rPath != NULL) free(rPath);
+                            strcat(buff,"\0");//Añadimos final de string
+                            showStat(strtok_r(buff," \n\t", &buff_ptr),&buff_ptr); //Llamada al comando stat
                         }
                     }
+                    if(closedir(directory) == 0) directory = NULL;//Liberamos memorida reservada por opendir
+                    else perror("Error en list:");
                     directory = opendir(args);
                     if(reca && !recb){ //Recursividad despues
                         while ((file = readdir(directory)) != NULL){
+                            if(strcmp(file->d_name,".")== 0 || strcmp(file->d_name,"..")== 0) continue; //Ingoramos .(este directorio) y ..(directorio padre)
                             if(file->d_name[0] == '.' && !hid) continue; //Saltar elementos ocultos salvo -hid
                             if(file->d_type == 4){ //Mirar subcarpetas recursivamente despues
                                 buff[0] = '\0'; //Obtencion de ruta absoluta
@@ -212,18 +221,18 @@ void list(char* args){ //Listar ficheros
                                 strcat(buff,"-reca "); //Añadimos -reca
                                 if(hid) strcat(buff,"-hid "); //Comprobamos si añadir -hid
                                 strcat(buff,rPath); //Añadimos ruta absoluta
-                                strtok(buff," \n\t"); //Troceamos la entrada
-                                list(buff); //Llamada recursiva a list
+                                if(rPath != NULL) free(rPath);
+                                strcat(buff,"\0");//Añadimos final de string
+                                list(strtok_r(buff," \n\t", &buff_ptr), &buff_ptr); //Llamada recursiva a list
                                 }
                             }
                         }
                     }
-                    closedir(directory);
+                    if(closedir(directory) == 0) directory = NULL;//Liberamos memorida reservada por opendir
                 }
             }   
-            args = strtok(NULL," \n\t"); 
+            args = strtok_r(NULL," \n\t",args_ptr); 
         }
-        if(rPath != NULL) free(rPath); //Liberamos memoria reservada por realpath
     }
 }
 
@@ -235,8 +244,9 @@ void delete(char* args){ //Borrar ficheros o directorios vacios
     }
 }
 
-void deltree(char* args){ //Borrado recursivo de cualquier cosa (COMANDO PEGRILOSO USAR VM)
-    char buff[1000]; //Buffer para obtener direccion absoluta 
+void deltree(char* args, char** args_ptr){ //Borrado recursivo de cualquier cosa (COMANDO PEGRILOSO)
+    char buff[1000]; //Buffer para construir ruta absoluta
+    char* buff_ptr; //Puntero para trocear buff
     char* rPath = NULL; //String para direccion absoluta
     DIR* directory = NULL; //Puntero para guardar las direcciones
     struct dirent* file; //Struct para cada fichero de las direcciones
@@ -257,15 +267,12 @@ void deltree(char* args){ //Borrado recursivo de cualquier cosa (COMANDO PEGRILO
                         else{
                             buff[0] = '\0'; //Construccion de argumentos para list
                             strcat(buff,rPath); //Añadimos ruta absoluta
-                            strtok(buff," \n\t"); //Troceamos la entrada
-                            puts(rPath);
-                            deltree(buff); //Llamada recursiva a list
+                            if(rPath != NULL) free(rPath); //Liberamos memoria reservada por realpath
+                            deltree(strtok_r(buff," \n\t", &buff_ptr), &buff_ptr); //Llamada recursiva a deltree
                         }
                     }
                 }
-            }
-            if((directory = opendir(args)) == NULL) perror("Error en deltree:");
-            else{
+                if(closedir(directory) == 0) directory = NULL;//Liberamos memorida reservada por opendir
                 directory = opendir(args);
                 printf("*BORRANDO: %s *\n",args); //Imprimir nombre de la carpeta
                 while ((file = readdir(directory)) != NULL){
@@ -278,15 +285,14 @@ void deltree(char* args){ //Borrado recursivo de cualquier cosa (COMANDO PEGRILO
                     else{
                         buff[0] = '\0'; //Construccion de argumentos para stat
                         strcat(buff,rPath); //Añadimos ruta absoluta
-                        strtok(buff," \n\t"); //Troceamos la entrada
+                        if(rPath != NULL) free(rPath); //Liberamos memoria reservada por realpath
                         delete(buff); //Llamada al comando delete
                     }
                 }
-                closedir(directory); //Cerramos directorio
+                if(closedir(directory) == 0) directory = NULL;//Liberamos memorida reservada por opendir
+                delete(args); //Borramos directorio vacio
             }
-            delete(args);
-            args = strtok(NULL," \n\t"); //Siguiente argumento
+            args = strtok_r(NULL," \n\t",args_ptr); //Siguiente argumento
         }
-        if(rPath != NULL) free(rPath); //Liberamos memoria reservada por realpath
     }
 }

@@ -1,0 +1,45 @@
+create prueba
+create ./prueba/letras
+create ./prueba/colores
+create ./prueba/nombres
+create ./prueba/letras/mayusculas
+create ./prueba/letras/minusculas
+create ./prueba/nombres/masculinos
+create ./prueba/nombres/femeninos
+create -f ./prueba/prueba.txt
+create -f ./prueba/letras/mayusculas/A
+create -f ./prueba/letras/mayusculas/B
+create -f ./prueba/letras/mayusculas/C 
+create -f ./prueba/letras/mayusculas/D 
+create -f ./prueba/letras/mayusculas/F 
+create -f ./prueba/letras/minusculas/w
+create -f ./prueba/letras/minusculas/x
+create -f ./prueba/letras/minusculas/y
+create -f ./prueba/letras/minusculas/z
+create -f ./prueba/colores/blanco
+create -f ./prueba/colores/negro
+create -f ./prueba/colores/blanco
+create -f ./prueba/colores/amarillo
+create -f ./prueba/colores/rojo
+create -f ./prueba/nombres/masculinos/miguel
+create -f ./prueba/nombres/masculinos/fernando
+create -f ./prueba/nombres/masculinos/antonio
+create -f ./prueba/nombres/femeninos/lucia
+create -f ./prueba/nombres/femeninos/antonia
+create -f ./prueba/nombres/femeninos/marcela
+create -f ./prueba/nombres/nana
+create -f ./prueba/nombres/messsi
+create ./prueba/.Ninja
+create -f ./prueba/.Ninja/.nomeves
+
+stat prueba
+stat -long prueba
+list -reca prueba
+list -recb prueba
+list -reca -recb -long -link -acc -hid prueba
+
+delete prueba
+delete ./prueba/prueba.txt
+deltree prueba
+
+list -reca -acc -hid prueba /home/david/Documentos

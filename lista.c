@@ -1,6 +1,6 @@
 //Codigo de la lista
 #include "lista.h"
-#define MAX_CMD 1000 //Tamaño maximo de un comando a guardar
+
 void createEmptyList(tList* lista){
     (*lista) = NULL;
 }
@@ -25,7 +25,8 @@ bool insertCMD(tList* lista, cmd comand){
     tPos i;
     tPos p = malloc(sizeof(struct node));
     if(p != NULL){
-        p->data = malloc(sizeof(char)*strlen(comand)+1);//añadir control de errores
+        p->data = malloc(sizeof(char)*strlen(comand)+1);
+        if(p->data == NULL) printf("ERROR EN INSERTCMD");
         strcpy(p->data, comand);
         p->next = NULL;
         if((*lista) == NULL){
@@ -212,4 +213,158 @@ bool deleteFile(tList* lista, int fd){ //Borra un archivo de la lista
         }
     }
     return false;
+}
+
+tMemBlock* newMemBlock(void* addres, size_t size, time_t allocTime, Type tipo, __key_t key, char name[], int fd){//Crea un bloque de memoria 
+    tMemBlock* p = malloc(sizeof(tMemBlock)); //Reservamos memoria
+    if(p != NULL){
+        p->addres = addres; //Guardamos direccion
+        p->size = size; //Guardamos tamañ0
+        time(&(p->allocTime)); //Guardamos hora
+        p->tipo = tipo; //Guardamos tipo
+        p->key = -1;
+        p->filename = NULL;
+        p->fd = -1;
+        if(tipo == shm) p->key = key; //Guardamos clave de shm
+        if(tipo == map) {
+            p->filename = malloc(sizeof(char)*(strlen(name)+1));
+            strcpy(p->filename, name);
+            p->fd = fd;
+        }
+    }
+    return p;
+}
+
+
+bool insertMemBlock(tList* lista, tMemBlock* memblock){ //Añade un bloque de memoria previamente creado a la lista
+    bool r; //Bool para guardar el retorno
+    tPos pos;
+    if(memblock == NULL) printf("No se puede añadir bloques de memoria nulos");
+    else{
+        if((pos = malloc(sizeof(struct node)))==NULL) r = false; //Comprobamos que la reserva de memoria sea correcta
+        else{
+            pos->data = memblock; //Guardamos los datos
+            pos->next = NULL;
+            if(isEmptyList(*lista)) *lista = pos; //Si la lista es vacia insertamos como unico elemento
+            else{//Si no insertamos al principio (mayor eficiencia)
+                pos->next = *lista;
+                *lista = pos;
+            }
+            r = true;
+        }
+    }
+    return r;
+}   
+void freeMemblock(tMemBlock* memBlock){ //Funcion auxiliar para liberar memoria de un bloque de memoria
+    if(memBlock->tipo == map) free(memBlock->filename);
+    free(memBlock);
+}
+
+void deleteMemBlockIn(tList* lista, tPos p){ //Boramos el item de la posicion p
+    tPos i;
+    if(p == *lista){
+        *lista = p->next; // Comprobamos si es el primer elemento
+        freeMemblock(p->data);
+        free(p);
+    }
+    else{
+        while (i!= NULL && i->next != p) //Recorremos la lista
+        {
+            i = i->next;
+        }
+        if(i->next == p){ //Si encontramos el elemento
+            i->next = p->next;
+            freeMemblock(p->data);
+            free(p);
+        }
+    }
+}
+
+tPos findKey(tList lista, __key_t key){ //Busca un elemento por el campo key
+    tPos i = lista;
+    tMemBlock * memBlock = NULL;
+    if(!isEmptyList(lista)){ // comprobamos que la lista no este vacia
+        memBlock = i->data;
+        while(i != NULL && memBlock->key != key){ // recorremos la lista
+            i = i->next;
+            if(i !=NULL) memBlock = i->data;
+        }
+        if(memBlock->key == key){ // Si encontramos el elemento devolvemos su puntero
+            return i; 
+        }
+    }
+    return NULL; //Si no encontramos el elemento devolvemos NULL
+}
+
+void deleteMemList(tList* lista){ //Elimina lista de memblocks
+    tPos i = NULL;
+    tMemBlock* memBlock;
+    while((*lista) !=NULL){
+        i = (*lista);
+        (*lista) = (*lista)->next;
+        memBlock = i->data;
+        freeMemblock(memBlock);
+        free(i);
+    }
+}
+
+void freeAllMemoryList(tList* lista){ //Funcion que vacia correctamente una lista de memoria antes de salir del programa
+    tPos i = NULL;
+    tMemBlock* memBlock;
+    while((*lista) !=NULL){
+        i = (*lista);
+        (*lista) = (*lista)->next;
+        memBlock = i->data;
+        free(memBlock->addres);
+        freeMemblock(memBlock);
+        free(i);
+    }
+}
+
+tPos searchBySiceAndType(tList lista, size_t tam, Type tipo){ //Devuelve la posicion de la primera coincidencia
+    tPos i = lista;
+    tMemBlock * memBlock = NULL;
+    if(!isEmptyList(lista)){ // comprobamos que la lista no este vacia
+        memBlock = i->data;
+        while(i != NULL && !(memBlock->size == tam && memBlock->tipo == tipo)){ // recorremos la lista
+            i = i->next;
+            if(i!=NULL)memBlock = i->data;
+        }
+        if(memBlock->size == tam && memBlock->tipo == tipo){ // Si encontramos el elemento devolvemos su puntero
+            return i; 
+        }
+    }
+    return NULL; //Si no encontramos el elemento devolvemos NULL
+}
+
+tPos searchByKey(tList lista, key_t key){ //Devuelve la posicion de la primera coincidencia
+    tPos i = lista;
+    tMemBlock * memBlock = NULL;
+    if(!isEmptyList(lista)){ // comprobamos que la lista no este vacia
+        memBlock = i->data;
+        while(i != NULL && !(memBlock->tipo == shm && memBlock->key == key)){ // recorremos la lista
+            i = i->next;
+            if(i!=NULL)memBlock = i->data;
+        }
+        if(memBlock->tipo == shm && memBlock->key == key){ // Si encontramos el elemento devolvemos su puntero
+            return i; 
+        }
+    }
+    return NULL; //Si no encontramos el elemento devolvemos NULL
+}
+
+tPos searchByFile(tList lista, char* file){ //Devuelve la posicion de la primera coincidencia
+    tPos i = lista;
+    tMemBlock * memBlock = NULL;
+    if(!isEmptyList(lista)){ // comprobamos que la lista no este vacia
+        memBlock = i->data;
+        while(i != NULL && !(memBlock->tipo == map && strcmp(memBlock->filename,file)==0)){ // recorremos la lista
+            i = i->next;
+            if(i!=NULL)memBlock = i->data;
+        }
+        if((memBlock->tipo == map && strcmp(memBlock->filename,file)==0)){ // Si encontramos el elemento devolvemos su puntero
+            return i; 
+        }
+    }
+    return NULL; //Si no encontramos el elemento devolvemos NULL
 }

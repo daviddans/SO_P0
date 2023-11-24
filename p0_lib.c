@@ -50,6 +50,24 @@ void help(char *args){
     else if(strcmp(args,"delete")== 0) puts("delete borra los archivos o carpetas vacias especificados\n \n");
     //Ayuda sobre el comando deltree
     else if(strcmp(args,"deltree")== 0) puts("delrtee borra recursivamente todo archivo y directoro contenido en las rutas dadas y sus subrutas\n   Usar con discrección la informacion borrada accidentalmente podria no ser recuperada");
+    //Ayuda sobre malloc
+    else if(strcmp(args,"malloc")== 0) puts("PlaceHolder(WIP)\n");
+    //Ayuda sobre shared
+    else if(strcmp(args,"shared")== 0) puts("PlaceHolder(WIP)\n");
+    //Ayuda sobre mmap
+    else if(strcmp(args,"mmap")== 0) puts("PlaceHolder(WIP)\n");
+    //Ayuda sobre read
+    else if(strcmp(args,"read")== 0) puts("PlaceHolder(WIP)\n");
+    //Ayuda sobre write
+    else if(strcmp(args,"write")== 0) puts("PlaceHolder(WIP)\n");
+    //Ayuda sobre memdump
+    else if(strcmp(args,"memdump")== 0) puts("PlaceHolder(WIP)\n");
+    //Ayuda sobre memfill
+    else if(strcmp(args,"memfill")== 0) puts("PlaceHolder(WIP)\n");
+    //Ayuda sobre mem
+    else if(strcmp(args,"mem")== 0) puts("PlaceHolder(WIP)\n");
+    //Ayuda sobre el comando recurse
+    else if(strcmp(args,"recurse")== 0) puts("recurse n Invoca a la funcion recursiva n veces\n");
     //Si se introduce un comando no reconocido se mostrara un mensaje de error
     else puts("Error: Comando no reconocido\n");
 }
@@ -107,11 +125,11 @@ void changeDir(char *args){
     else if(chdir(args)!=0) perror("Error(chdir): "); //Se intenta cambiar al directorio introducido, si no se logra, imprimir un error
 }
 //Usar el historico de comandos
-void hist(char* args, tList* lista){
+void hist(char* args, char**args_ptr, tList* lista){
     int n = 0;
     if(isEmptyList(*lista)) puts("Error en el historial de comandos\n");
     else {
-        args = strtok(args,"-");
+        args = strtok_r(args,"-",args_ptr);
         if(args == NULL){ //Si no hay argumentos validos
             printCMD(*lista, -1); // Imprimir todos los comandos
         }
@@ -149,7 +167,7 @@ void printFiles(tList lista){ //Funcion auxiliar para imprimir la lista de archi
     }
 }
 
-void openfile(char* args, tList* lista){ //Abrir un fichero
+void openfile(char* args, char** args_ptr, tList* lista){ //Abrir un fichero
     int mode = 0; //int para guardar el mode
     int fd = -1; //int para guardar el fd
     char* path = NULL; //int para guardar la ruta del archivo
@@ -157,7 +175,7 @@ void openfile(char* args, tList* lista){ //Abrir un fichero
     else{
         path = malloc(sizeof(char)*strlen(args)+1); //Reservamos memoria para guardar la direccion.
         strcpy(path, args); //Copiamos la direccion
-        args = strtok(NULL," \n\t"); //Siguiente argumento
+        args = strtok_r(NULL," \n\t", args_ptr); //Siguiente argumento
         while(args != NULL){ //Comprobar modos introducidos
             if (!strcmp(args,"cr")) mode|=O_CREAT;
             else if (!strcmp(args,"ex")) mode|=O_EXCL;
@@ -169,7 +187,7 @@ void openfile(char* args, tList* lista){ //Abrir un fichero
             else {
                 printf("Error: Flag %s no valido\n", args);//Control de error de argumento no valido
             }
-            args = strtok(NULL," \n\t");//Siguiente argumento
+            args = strtok_r(NULL," \n\t",args_ptr);//Siguiente argumento
         }
         fd = open(path, mode,0777); //Llamada al sistema y guardamos el fd resultante
         if(fd > 0) {
@@ -182,15 +200,18 @@ void openfile(char* args, tList* lista){ //Abrir un fichero
      free(path); //Liberamos la memoria guardada
 }
 
-int strToInt(char* str){ // Funcion auxiliar para convertir strings en enteros con un control de errores añadido
+int strToInt(char* str){ // Funcion auxiliar para convertir strings en enteros positivos con un control de errores añadido
     int r;
     bool isNum = true;
-    for (int i = 0; str[i] != '\0'; i++){ //comprobamos si el string dado es convertible
-        if(str[i]<48 || str[i] > 57){
-            isNum = false; 
-            break;
+    if(str != NULL){
+        for (int i = 0; str[i] != '\0'; i++){ //comprobamos si el string dado es convertible
+            if(str[i]<48 || str[i] > 57){
+                isNum = false; 
+                break;
+            }
         }
     }
+    else isNum = false;
     if(isNum) r = atoi(str); //Si es convertible usamos la funcion atoi para convertirlo en entero
     else r = -1; //En otro caso devolvemos -1 para controlar los posibles errores
     return r;
