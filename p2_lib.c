@@ -1,5 +1,6 @@
 #include "p2_lib.h"
 #define MAX_FILE_LEN 1000
+
 void memTypeToStr(Type tipo, char buff[8]){ //Funcion auxiliar para convertir enumType en str
 
     switch (tipo)
@@ -53,7 +54,7 @@ void printMemBlocksType(tList lista, Type tipo){ //Imprime lista de memoria (fil
 
 void doRecurse(int n)
 {
-    if(n >= -1) printf("Error en recurse: argumento invalido");
+    if(n == -1) printf("Error en recurse: argumento invalido\n");
     else {
         char automatico[TAMANO];
         static char estatico[TAMANO];   
@@ -351,5 +352,87 @@ void doMemdump(char* args, char** args_ptr){
             printf(" %.2X ", addr[i]);
         }
         printf("\n");
+    }
+}
+
+void Do_MemPmap (void) /*sin argumentos*/
+ { pid_t pid;       /*hace el pmap (o equivalente) del proceso actual*/
+   char elpid[32];
+   char *argv[4]={"pmap",elpid,NULL};
+   
+   sprintf (elpid,"%d", (int) getpid());
+   if ((pid=fork())==-1){
+      perror ("Imposible crear proceso");
+      return;
+      }
+   if (pid==0){ /*proceso hijo*/
+      if (execvp(argv[0],argv)==-1)
+         perror("cannot execute pmap (linux, solaris)");
+      
+      argv[0]="vmmap"; argv[1]="-interleave"; argv[2]=elpid;argv[3]=NULL;
+      if (execvp(argv[0],argv)==-1) /*probamos vmmap Mac-OS*/
+         perror("cannot execute vmmap (Mac-OS)");          
+      
+      argv[0]="procstat"; argv[1]="vm"; argv[2]=elpid; argv[3]=NULL;   
+      if (execvp(argv[0],argv)==-1)/*No hay pmap, probamos procstat FreeBSD */
+         perror("cannot execute procstat (FreeBSD)");
+         
+      argv[0]="procmap",argv[1]=elpid;argv[2]=NULL;    
+            if (execvp(argv[0],argv)==-1)  /*probamos procmap OpenBSD*/
+         perror("cannot execute procmap (OpenBSD)");
+         
+      exit(1);
+  }
+  waitpid (pid,NULL,0);
+}
+
+int globA = 98723542;
+int globB = 40670303;
+int globC = 74742121;
+int globD;
+int globE;
+int globF;
+
+void doMem(char* args, char** args_ptr, tList* memory){//muestra información de la memoria de los procesos
+    int pid = getpid();
+    char procRute[30];
+    sprintf(procRute,"/proc/%d/maps",pid);
+    FILE *proc = fopen(procRute,"r");
+    char c;
+    if(args == NULL || strcmp(args,"-all")==0){
+        doMem("-vars",NULL,memory);
+        doMem("-funcs",NULL,memory);
+        doMem("-blocks",NULL,memory);
+    }
+    else if(strcmp(args,"-blocks")==0){
+        printf("******Lista de bloques asignados para el proceso %d\n",pid);
+        printMemBlocks(*memory); //Sin argumentos imprimimos reservas de memoria
+    }
+    else if(strcmp(args,"-pmap")==0) Do_MemPmap();
+    else if(strcmp(args,"-funcs")==0){
+        printf("Funciones programa:\t%p,\t%p,\t%p\n",authors,create,doMalloc);
+        printf("Funciones libreria:\t%p,\t%p,\t%p\n",printf,scanf,strcpy);
+    }
+    else if(strcmp(args,"-vars")==0){
+        int a = 12351523;
+        int b = 46572356;
+        int c = 17452164;
+        static int sa = 124346534;
+        static int sb = 124346534;
+        static int sc = 124346534;
+        static int sd;
+        static int se;
+        static int sf;
+        printf("Variables Locales:\t%p,\t%p,\t%p\n",&a,&b,&c);
+        printf("Variables Globales:\t%p,\t%p,\t%p\n",&globA,&globB,&globC);
+        printf("Var(N.I.) Globales:\t%p,\t%p,\t%p\n",&globD,&globE,&globF);
+        printf("Variables Estaticas:\t%p,\t%p,\t%p\n",&sa,&sb,&sc);
+        printf("Var(N.I.) Estaticas:\t%p,\t%p,\t%p\n",&sd,&se,&sf);
+    }
+    else{
+        while (c != EOF){
+        c = fgetc(proc);
+         printf("%c", c);
+        }
     }
 }

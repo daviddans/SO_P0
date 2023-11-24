@@ -11,7 +11,7 @@ void doRead(char* args, char** args_ptr); //lee un fichero en memoria
 void doWrite(char* args, char** args_ptr); //escribe en un fichero los contenidos de una dirección de memoria
 void doMemdump(char* args, char** args_ptr); //vuelca los contenidos de una dirección de memoria en la pantalla
 void doMemfill(char* args, char** args_ptr); //llena la memoria con el mismo byte
-void doMem(); //muestra información de la memoria de los procesos
+void doMem(char* args, char** args_ptr, tList* memory); //muestra información de la memoria de los procesos
 void doRecurse(int n); //ejecuta una funcion recursiva
 
 void printMemBlocks(tList lista); //Mostrar bloques de memoria de una lista

@@ -203,12 +203,15 @@ void openfile(char* args, char** args_ptr, tList* lista){ //Abrir un fichero
 int strToInt(char* str){ // Funcion auxiliar para convertir strings en enteros positivos con un control de errores añadido
     int r;
     bool isNum = true;
-    for (int i = 0; str[i] != '\0'; i++){ //comprobamos si el string dado es convertible
-        if(str[i]<48 || str[i] > 57){
-            isNum = false; 
-            break;
+    if(str != NULL){
+        for (int i = 0; str[i] != '\0'; i++){ //comprobamos si el string dado es convertible
+            if(str[i]<48 || str[i] > 57){
+                isNum = false; 
+                break;
+            }
         }
     }
+    else isNum = false;
     if(isNum) r = atoi(str); //Si es convertible usamos la funcion atoi para convertirlo en entero
     else r = -1; //En otro caso devolvemos -1 para controlar los posibles errores
     return r;
