@@ -215,7 +215,14 @@ void doMmap(char* args, char** args_ptr, tList* memory){ //mapea o desmapea un f
     else{
         strcpy(fichero, args);
         args = strtok_r(NULL," \n\t", args_ptr);
-        if(args != NULL)protection = strtoul(args,NULL,8);
+        if(args != NULL){
+            for (int i = 0; i < 3; i++)
+            {
+                if (strchr(args,'r')!=NULL) protection|=PROT_READ;
+                else if (strchr(args,'w')!=NULL) protection|=PROT_WRITE;
+                else if (strchr(args,'x')!=NULL) protection|=PROT_EXEC;
+            }   
+        }
         if (protection&PROT_WRITE) modo=O_RDWR;
         else if (stat(fichero,&s)==-1 || (fd=open(fichero, modo))==-1) perror("Error en mmap:");
         else if ((memPtr=mmap(NULL,s.st_size, protection,map,fd,0))==MAP_FAILED) perror("Error en mmap:");
@@ -223,6 +230,7 @@ void doMmap(char* args, char** args_ptr, tList* memory){ //mapea o desmapea un f
             allocTime = s.st_atime;
             tam = s.st_size;
             insertMemBlock(memory,newMemBlock(memPtr,tam,allocTime,map,0,fichero,fd));
+            printf("Fichero: %s mapeado en %p\n",fichero,memPtr);
         }
     }
 }
@@ -246,8 +254,7 @@ ssize_t LeerFichero (char *f, void *p, size_t cont)
    return n;
 }
 
-void doRead(char* args, char** args_ptr) //lee un fichero en memoria
-{
+void doRead(char* args, char** args_ptr){ //lee un fichero en memoria
     void* addr;
     size_t nBytes;
     char fichero[Max_len_dir];
@@ -259,6 +266,47 @@ void doRead(char* args, char** args_ptr) //lee un fichero en memoria
         args = strtok_r(NULL," \n\t", args_ptr);
         nBytes = strtol(args,NULL,10);
         LeerFichero(fichero,addr,nBytes);
+    }
+}
+
+ssize_t EscribirFichero (char *f, void *p, size_t cont, bool overwrite){
+   ssize_t  n;
+   int df,aux, flags=O_CREAT | O_EXCL | O_WRONLY;
+
+   if (overwrite)
+	flags=O_CREAT | O_WRONLY | O_TRUNC;
+
+   if ((df=open(f,flags,0777))==-1)
+	return -1;
+
+   if ((n=write(df,p,cont))==-1){
+	aux=errno;
+	close(df);
+	errno=aux;
+	return -1;
+   }
+   close (df);
+   return n;
+}
+
+void doWrite(char* args, char** args_ptr){//escribe en un fichero los contenidos de una dirección de memoria
+    void* addr;
+    size_t nBytes;
+    char fichero[Max_len_dir];
+    bool ow = false;
+    if (args == NULL) printf("Error en write: faltan parametros\n");
+    else{
+        if (strcmp(args,"-o")==0)
+        {
+            ow = true;
+            args = strtok_r(NULL," \n\t", args_ptr);
+        }
+        strcpy(fichero,args);
+        args = strtok_r(NULL," \n\t", args_ptr);
+        addr = (void*)strtoul(args,NULL,16);
+        args = strtok_r(NULL," \n\t", args_ptr);
+        nBytes = strtol(args,NULL,10);
+        if(EscribirFichero(fichero,addr,nBytes,ow)==-1)perror("Error en write:");
     }
 }
 

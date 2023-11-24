@@ -8,7 +8,7 @@ void doMalloc(char* args, char** args_ptr, tList* memory); //reserva o libera un
 void doShared(char* args, char** args_ptr, tList* memory); //reserva o libera un bloque shared de memoria
 void doMmap(char* args, char** args_ptr, tList* memory); //mapea o desmapea un fichero en memoria
 void doRead(char* args, char** args_ptr); //lee un fichero en memoria
-void doWrite(); //escribe en un fichero los contenidos de una dirección de memoria
+void doWrite(char* args, char** args_ptr); //escribe en un fichero los contenidos de una dirección de memoria
 void doMemdump(char* args, char** args_ptr); //vuelca los contenidos de una dirección de memoria en la pantalla
 void doMemfill(char* args, char** args_ptr); //llena la memoria con el mismo byte
 void doMem(); //muestra información de la memoria de los procesos
