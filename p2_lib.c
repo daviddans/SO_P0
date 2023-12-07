@@ -429,10 +429,4 @@ void doMem(char* args, char** args_ptr, tList* memory){//muestra información de
         printf("Variables Estaticas:\t%p,\t%p,\t%p\n",&sa,&sb,&sc);
         printf("Var(N.I.) Estaticas:\t%p,\t%p,\t%p\n",&sd,&se,&sf);
     }
-    else{
-        while (c != EOF){
-        c = fgetc(proc);
-         printf("%c", c);
-        }
-    }
 }

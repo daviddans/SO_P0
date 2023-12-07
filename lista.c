@@ -254,7 +254,8 @@ bool insertMemBlock(tList* lista, tMemBlock* memblock){ //Añade un bloque de me
         }
     }
     return r;
-}   
+}
+
 void freeMemblock(tMemBlock* memBlock){ //Funcion auxiliar para liberar memoria de un bloque de memoria
     if(memBlock->tipo == map) free(memBlock->filename);
     free(memBlock);
@@ -367,4 +368,37 @@ tPos searchByFile(tList lista, char* file){ //Devuelve la posicion de la primera
         }
     }
     return NULL; //Si no encontramos el elemento devolvemos NULL
+}
+
+tBGProc* newBGproc(int pid, Status status, char cmd[], int prior){//Crea un bloque de memoria 
+    tBGProc* p = malloc(sizeof(tBGProc)); //Reservamos memoria
+    if(p != NULL){
+        p->pid = pid; //guardar pid
+        time(&(p->launchTime)); //Guardamos hora
+        p->status = status; //guardar status
+        p->command = malloc(sizeof(char)*strlen(cmd)+1);
+        strcpy(p->command,cmd);
+        p->prior = prior;
+    }
+    return p;
+}
+
+bool insertBGProc(tList* lista, tBGProc* process){ //Añade un bloque de memoria previamente creado a la lista
+    bool r; //Bool para guardar el retorno
+    tPos pos;
+    if(process == NULL) printf("No se puede añadir bloques de memoria nulos");
+    else{
+        if((pos = malloc(sizeof(struct node)))==NULL) r = false; //Comprobamos que la reserva de memoria sea correcta
+        else{
+            pos->data = process; //Guardamos los datos
+            pos->next = NULL;
+            if(isEmptyList(*lista)) *lista = pos; //Si la lista es vacia insertamos como unico elemento
+            else{//Si no insertamos al principio (mayor eficiencia)
+                pos->next = *lista;
+                *lista = pos;
+            }
+            r = true;
+        }
+    }
+    return r;
 }

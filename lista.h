@@ -38,6 +38,15 @@ typedef struct memBlock{
     char* filename;
     int fd;
 }tMemBlock;
+typedef enum{FIN,STP,SIG,ACT} Status;
+typedef struct bGProc{
+    int pid;
+    time_t launchTime;
+    Status status;
+    char* command;
+    int prior;
+}tBGProc;
+
 
 //Definicion de lista dinamica
 typedef struct node* tPos; 
@@ -72,3 +81,4 @@ tPos searchByKey(tList lista, key_t key); //Devuelve la posicion de la primera c
 tPos searchByFile(tList lista, char* file); //Devuelve la posicion de la primera coincidencia
 void deleteMemList(tList* lista); //Elimina una lista de memblocks liberando la memoria dinamica correctamente
 // void freeAllMemoryList(tList* lista); //Igual que deletememlist, pero liberando p->data->addres tambien (Funcinamiento no correcto)
+
