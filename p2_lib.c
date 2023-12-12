@@ -395,10 +395,6 @@ int globF;
 
 void doMem(char* args, char** args_ptr, tList* memory){//muestra información de la memoria de los procesos
     int pid = getpid();
-    char procRute[30];
-    sprintf(procRute,"/proc/%d/maps",pid);
-    FILE *proc = fopen(procRute,"r");
-    char c;
     if(args == NULL || strcmp(args,"-all")==0){
         doMem("-vars",NULL,memory);
         doMem("-funcs",NULL,memory);

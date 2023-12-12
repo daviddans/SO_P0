@@ -9,7 +9,7 @@
 
 
 //Funcion para gestionar los comandos y parametros introducidos
-void inputHandler(char * input, bool * onRunTime, tList* listaComandos, tList* listaFicheros, tList* memory, int* control)
+void inputHandler(char * input, bool * onRunTime, tList* listaComandos, tList* listaFicheros, tList* memory, int* control, char** enviro)
 {
 	int i; //variable para command N
 	tPos pos; //variable para command N
@@ -45,8 +45,10 @@ void inputHandler(char * input, bool * onRunTime, tList* listaComandos, tList* l
 	else if(strcmp(input,"memdump")==0) doMemdump(args, &args_ptr);
 	else if(strcmp(input,"memfill")==0) doMemfill(args, &args_ptr);
 	else if(strcmp(input,"recurse")==0) doRecurse(strToInt(args));
-	else if(strcmp(input,"mem")==0) doMem(args,&args_ptr, memory);
-	else if(strcmp(input,"command")==0){//Command hace una llamada recursiva a la función para repetir la ejecución de un comando del historico(Comando de p0, debe estar aquí para poder llamar a funciones anteriores)
+	else if(strcmp(input,"uid")==0) doUid(args,&args_ptr);
+	else if(strcmp(input,"showvar")==0) doShowVar(args, enviro);
+	else if(strcmp(input,"changevar")==0) ; //WIP
+	else if(strcmp(input,"command")==0){//Command hace una llamada recursiva a la función para repetir la ejecución de un comando del historico (Comando de p0, debe estar aquí para poder llamar a funciones posteriores en la jerarquia del codigo)
 		(*control)++; //Aumentamos el contador de llamadas recursivas
 		if(*control<MAX_REC){ //Comprobamos no exceder nuestro limite recursivo
 			pos = first(*listaComandos); // Guardamos el primer elemento de la lista
@@ -64,18 +66,18 @@ void inputHandler(char * input, bool * onRunTime, tList* listaComandos, tList* l
 					args = getData(*listaComandos, pos); //Reutilizamos args para guardar el comando a repetir
 					strcpy(input, args); //Copiamos args a input
 					printf("Ejecutando: %s\n", input); //Mostramos un mensaje de confirmacion
-					inputHandler(input, onRunTime, listaComandos, listaFicheros, memory, control); //Llamada recursiva
+					inputHandler(input, onRunTime, listaComandos, listaFicheros, memory, control, enviro); //Llamada recursiva
 				}
 			}
 		}
 		else puts("Demasiada recursion!!!\n"); // Maostramos un error si nos excedemos en el numero de recursiones
 	} 
-	else if(strcmp(input,"\n")!=0) printf("Comando no reconocido. Usa help para obtener una lista de comandos\n");//Si hay un comando no reconocido se imprime un error
+	else doCommand(input);
 
 }
 
 //Funcion Main 
-int main(){
+int main(int argc, char **argv, char **enviro){
 	tList listaComandos; //Lista para el historial de comandos
 	tList listaFicheros; //Lista para los ficheros abiertos
 	tList memory; //Lista para la memoria mapeada
@@ -96,7 +98,7 @@ int main(){
 		if(input != NULL){
 			control = 0;
 			insertCMD(&listaComandos, input);//Añadimos comando al historico
-			inputHandler(input, &onRunTime, &listaComandos, &listaFicheros, &memory, &control);//Procesar entrada
+			inputHandler(input, &onRunTime, &listaComandos, &listaFicheros, &memory, &control, enviro);//Procesar entrada
 		}
 	}
 	//Borrado de las listas

@@ -370,15 +370,13 @@ tPos searchByFile(tList lista, char* file){ //Devuelve la posicion de la primera
     return NULL; //Si no encontramos el elemento devolvemos NULL
 }
 
-tBGProc* newBGproc(int pid, Status status, char cmd[], int prior){//Crea un bloque de memoria 
+tBGProc* newBGproc(int pid, char cmd[]){//Crea un bloque de memoria 
     tBGProc* p = malloc(sizeof(tBGProc)); //Reservamos memoria
     if(p != NULL){
         p->pid = pid; //guardar pid
         time(&(p->launchTime)); //Guardamos hora
-        p->status = status; //guardar status
         p->command = malloc(sizeof(char)*strlen(cmd)+1);
         strcpy(p->command,cmd);
-        p->prior = prior;
     }
     return p;
 }
@@ -386,7 +384,7 @@ tBGProc* newBGproc(int pid, Status status, char cmd[], int prior){//Crea un bloq
 bool insertBGProc(tList* lista, tBGProc* process){ //Añade un bloque de memoria previamente creado a la lista
     bool r; //Bool para guardar el retorno
     tPos pos;
-    if(process == NULL) printf("No se puede añadir bloques de memoria nulos");
+    if(process == NULL) printf("Error: No se puede añadir a la lista\n");
     else{
         if((pos = malloc(sizeof(struct node)))==NULL) r = false; //Comprobamos que la reserva de memoria sea correcta
         else{

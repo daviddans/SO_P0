@@ -38,13 +38,12 @@ typedef struct memBlock{
     char* filename;
     int fd;
 }tMemBlock;
+
 typedef enum{FIN,STP,SIG,ACT} Status;
 typedef struct bGProc{
     int pid;
     time_t launchTime;
-    Status status;
     char* command;
-    int prior;
 }tBGProc;
 
 
@@ -80,5 +79,6 @@ tPos searchBySiceAndType(tList lista, size_t tam, Type tipo); //Devuelve la posi
 tPos searchByKey(tList lista, key_t key); //Devuelve la posicion de la primera coincidencia
 tPos searchByFile(tList lista, char* file); //Devuelve la posicion de la primera coincidencia
 void deleteMemList(tList* lista); //Elimina una lista de memblocks liberando la memoria dinamica correctamente
-// void freeAllMemoryList(tList* lista); //Igual que deletememlist, pero liberando p->data->addres tambien (Funcinamiento no correcto)
-
+//Funciones de procesos (p3)
+tBGProc* newBGproc(int pid,char cmd[]); //Crear entrada de un proceso en segundo plano
+bool insertBGProc(tList* lista, tBGProc* process); //Insertar proceso en lista

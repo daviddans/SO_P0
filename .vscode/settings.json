@@ -1,5 +1,6 @@
 {
     "files.associations": {
         "p2_lib.h": "c"
-    }
+    },
+    "C_Cpp.default.compilerPath": "/usr/bin/gcc"
 }
