@@ -5,8 +5,8 @@
 
 void doUid(char *args, char**args_ptr); //muestra o cambia credenciales
 void doShowVar(char *args, char** env); //muestra variable de entorno
-void doChangeVar(); //cambia variable de entorno
-void doSubsVar(); //intercambia variables de entorno
+void doChangeVar(char *args, char**args_ptr, char **env); //cambia variable de entorno
+void doSubsVar(char *args, char**args_ptr, char **env); //intercambia variables de entorno
 void doShowEnv(); //muestra entorno
 void doFork(); //crea proceso hijo
 void doExec(); //ejecuta un un programa sin crear un proceso hijo

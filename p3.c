@@ -47,7 +47,8 @@ void inputHandler(char * input, bool * onRunTime, tList* listaComandos, tList* l
 	else if(strcmp(input,"recurse")==0) doRecurse(strToInt(args));
 	else if(strcmp(input,"uid")==0) doUid(args,&args_ptr);
 	else if(strcmp(input,"showvar")==0) doShowVar(args, enviro);
-	else if(strcmp(input,"changevar")==0) ; //WIP
+	else if(strcmp(input,"changevar")==0) doChangeVar(args,&args_ptr,enviro);
+	else if(strcmp(input,"subsvar")==0) doSubsVar(args,&args_ptr,enviro); 
 	else if(strcmp(input,"command")==0){//Command hace una llamada recursiva a la función para repetir la ejecución de un comando del historico (Comando de p0, debe estar aquí para poder llamar a funciones posteriores en la jerarquia del codigo)
 		(*control)++; //Aumentamos el contador de llamadas recursivas
 		if(*control<MAX_REC){ //Comprobamos no exceder nuestro limite recursivo
