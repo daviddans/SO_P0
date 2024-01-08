@@ -1,6 +1,4 @@
 //Author1: David Dans Villares Login: david.dans.villares@udc.es
-//Author2: Pablo Teijeiro Torrón Login: pablo.teijeirot@udc.es
-
 
 #include "p3_lib.h" //Cabecera con las dependencias del codigo
 
