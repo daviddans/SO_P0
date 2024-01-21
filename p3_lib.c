@@ -322,6 +322,7 @@ void doCommand(char* cmd,char* args,char** args_ptr, tList* list){
         if((pid = fork()) == 0){
             execvp(argv[0],argv);
             perror("Error:");
+	    exit(0);
         }
         else if(pid == -1) perror("Error:");
         else if(bg) insertBGProc(list,newBGproc(pid,argv[0],"ACTIVO",0));
